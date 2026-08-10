@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>無限寶藏財務總覽｜Firebase 共編版</title>
+<style>
+:root{--bg:#f5f7f9;--card:#fff;--ink:#17202a;--muted:#748094;--line:#e6e9ee;--nav:#131a23;--green:#176b5b;--green2:#e9f5f1;--amber:#a96f13;--amber2:#fff4df;--red:#b44444;--red2:#fdecec;--blue:#315f9c;--blue2:#edf3fb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif}
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}aside{background:var(--nav);color:white;padding:24px 18px}
+.logo{font-size:19px;font-weight:800;margin-bottom:24px}.logo small{display:block;font-size:11px;color:#8e9aae;margin-top:5px}
+nav a{display:block;color:#c8d0db;text-decoration:none;padding:11px 12px;border-radius:9px;margin:4px 0;font-size:14px}nav a:hover{background:#263140;color:#fff}
+main{padding:28px;max-width:1600px;width:100%}.head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:18px}.head h1{margin:0;font-size:28px}.sub{color:var(--muted);font-size:13px;margin-top:7px;line-height:1.5}
+.actions,.filters{display:flex;gap:8px;flex-wrap:wrap}.btn,.field{border:1px solid var(--line);background:#fff;border-radius:9px;padding:9px 12px;font:inherit;font-size:13px}.btn{cursor:pointer;font-weight:700}.btn.primary{background:var(--green);border-color:var(--green);color:white}.btn.danger{color:var(--red)}.btn.edit{padding:5px 8px;font-size:11px}.btn.delete{padding:5px 8px;font-size:11px;color:var(--red)}
+.filters{margin-bottom:15px}.kpis{display:grid;grid-template-columns:repeat(6,minmax(145px,1fr));gap:11px}.card{background:#fff;border:1px solid var(--line);border-radius:14px}.kpi{padding:16px}.kpi .lab{font-size:12px;color:var(--muted);margin-bottom:8px}.kpi .num{font-size:22px;font-weight:850}.kpi .hint{font-size:11px;color:var(--muted);margin-top:7px}
+.sectionhead{display:flex;justify-content:space-between;align-items:center;margin:24px 0 10px}.sectionhead h2{margin:0;font-size:17px}.panel{padding:18px}.notice{padding:12px 14px;background:#fafbfc;border:1px solid var(--line);border-radius:10px;font-size:12px;line-height:1.55;color:#596579}
+.tablebox{overflow:hidden}.scroll{overflow:auto}table{border-collapse:collapse;width:100%;min-width:1400px}th,td{padding:10px 11px;border-bottom:1px solid var(--line);font-size:12px;white-space:nowrap;text-align:left}th{background:#fafbfc;color:#6e7889}.money{text-align:right}.badge{display:inline-flex;padding:4px 8px;border-radius:99px;font-size:11px;font-weight:750}.ok{background:var(--green2);color:var(--green)}.wait{background:var(--amber2);color:var(--amber)}.info{background:var(--blue2);color:var(--blue)}.bad{background:var(--red2);color:var(--red)}
+.membergrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.withdrawgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.accountcards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.accountcard{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff}.accountcard b{display:block}.accountcard small{color:var(--muted);display:block;margin-top:4px}.checkcell{text-align:center}.summarybar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;background:#fafbfc;border:1px solid var(--line);border-radius:10px;margin-bottom:10px}.summarybar strong{font-size:18px}.mutedtext{color:var(--muted);font-size:12px}.member{border:1px solid var(--line);border-radius:10px;padding:13px}.member b{display:block}.member small{color:var(--muted)}
+.modal,.loginOverlay{display:none;position:fixed;inset:0;background:rgba(12,18,26,.48);align-items:center;justify-content:center;padding:20px;z-index:20}.modal.show,.loginOverlay.show{display:flex}.dialog{width:min(940px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:15px}.loginCard{width:min(420px,92vw);background:white;border-radius:16px;padding:24px}.loginCard h2{margin-top:0}.loginCard input{width:100%;padding:11px;border:1px solid var(--line);border-radius:9px;margin:7px 0 12px}.loginCard .error{color:var(--red);font-size:12px;min-height:18px}
+.dialoghead,.dialogfoot{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.dialogfoot{border-bottom:0;border-top:1px solid var(--line);justify-content:flex-end;gap:8px}.dialogbody{padding:18px 20px}.formgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.formgrid .full{grid-column:1/-1}.formgrid label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}.formgrid input,.formgrid select,.formgrid textarea{width:100%;border:1px solid #dbe0e7;border-radius:8px;padding:9px;font:inherit;font-size:13px}.formgrid textarea{min-height:70px}
+.empty{padding:24px;text-align:center;color:var(--muted)}.userbox{font-size:12px;color:var(--muted)}footer{color:#8a95a5;font-size:11px;margin:28px 0}
+@media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}}@media(max-width:760px){.app{display:block}aside{display:none}main{padding:16px}.head{display:block}.actions{margin-top:12px}.kpis{grid-template-columns:repeat(2,1fr)}.formgrid{grid-template-columns:1fr}.membergrid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="loginOverlay show" id="loginOverlay">
+  <div class="loginCard">
+    <h2>無限寶藏財務總覽</h2>
+    <div class="sub" style="margin-bottom:14px">請用 Firebase Authentication 已建立的帳號登入。</div>
+    <label>電子郵件</label>
+    <input id="loginEmail" type="email" autocomplete="username">
+    <label>密碼</label>
+    <input id="loginPassword" type="password" autocomplete="current-password">
+    <div class="error" id="loginError"></div>
+    <button class="btn primary" style="width:100%" id="loginBtn">登入</button>
+  </div>
+</div>
+
+<div class="app">
+<aside>
+<div class="logo">無限寶藏<br>財務總覽<small>FIREBASE FINANCE OS</small></div>
+<nav>
+<a href="#top">財務總覽</a><a href="#income">收入管理</a><a href="#expense">支出管理</a><a href="#withdrawals">提領管理</a><a href="#settlement">分潤結算</a><a href="#accounting">會計待辦</a>
+</nav>
+</aside>
+
+<main id="top">
+<div class="head">
+<div>
+  <h1>無限寶藏財務總覽</h1>
+  <div class="sub">Firebase 共編版｜資料儲存在 Cloud Firestore，多人登入後共用同一份資料。</div>
+  <div class="userbox" id="userBox"></div>
+</div>
+<div class="actions">
+  <button class="btn" id="exportBtn">匯出 CSV</button>
+  <button class="btn" onclick="resetExpenseForm();openModal('expenseModal')">＋支出</button>
+  <button class="btn primary" onclick="resetIncomeForm();openModal('incomeModal')">＋收入</button>
+  <button class="btn danger" id="logoutBtn">登出</button>
+</div>
+</div>
+
+<div class="filters">
+<select class="field" id="yearFilter"><option>2026</option><option>2025</option><option>2024</option></select>
+<select class="field" id="monthFilter"><option value="all">全年</option><option value="1">1 月</option><option value="2">2 月</option><option value="3">3 月</option><option value="4">4 月</option><option value="5">5 月</option><option value="6">6 月</option><option value="7">7 月</option><option value="8">8 月</option><option value="9">9 月</option><option value="10">10 月</option><option value="11">11 月</option><option value="12">12 月</option></select>
+</div>
+
+<div class="kpis">
+<div class="card kpi"><div class="lab">已確認收入</div><div class="num" id="kIncome">NT$ 0</div><div class="hint">含稅金額</div></div>
+<div class="card kpi"><div class="lab">實際已收款</div><div class="num" id="kReceived">NT$ 0</div><div class="hint">已收到款項</div></div>
+<div class="card kpi"><div class="lab">待開發票</div><div class="num" id="kUnwithdrawn">0 筆</div><div class="hint">收入憑證尚未完成</div></div>
+<div class="card kpi"><div class="lab">待收款</div><div class="num" id="kReceivable">NT$ 0</div><div class="hint">尚未收到</div></div>
+<div class="card kpi"><div class="lab">待付款</div><div class="num" id="kPayable">NT$ 0</div><div class="hint">支出已成立</div></div>
+<div class="card kpi"><div class="lab">淨現金流</div><div class="num" id="kNet">NT$ 0</div><div class="hint">已入帳收入－已付支出</div></div>
+</div>
+
+<div class="card panel" style="margin-top:14px">
+<div class="notice"><b>金額規則：</b>每筆交易同時保留未稅、稅額、含稅。收入表只追蹤專案、付款方、收款狀態與發票；付款方式、代墊人、勞報與收據集中在支出表管理。</div>
+</div>
+
+<div id="income" class="sectionhead"><h2>收入管理</h2><button class="btn primary" onclick="resetIncomeForm();openModal('incomeModal')">＋新增收入</button></div>
+<div class="card tablebox"><div class="scroll"><table><thead><tr><th>日期</th><th>類型</th><th>付款方／平台</th><th>專案名稱</th><th>統編</th><th>未稅</th><th>稅額</th><th>含稅</th><th>收款</th><th>發票</th><th>負責人</th><th>憑證確認</th><th>建立者</th><th>最後修改</th><th>操作</th></tr></thead><tbody id="incomeBody"><tr><td colspan="15" class="empty">登入後讀取資料...</td></tr></tbody></table></div></div>
+
+<div id="expense" class="sectionhead"><h2>支出管理</h2><button class="btn primary" onclick="resetExpenseForm();openModal('expenseModal')">＋新增支出</button></div>
+<div class="card tablebox"><div class="scroll"><table><thead><tr><th>日期</th><th>類型</th><th>收款人／廠商</th><th>對象</th><th>憑證</th><th>專案</th><th>未稅</th><th>稅額</th><th>含稅</th><th>付款</th><th>付款人／代墊</th><th>勞報</th><th>發票／收據</th><th>負責人</th><th>憑證確認</th><th>建立者</th><th>最後修改</th><th>操作</th></tr></thead><tbody id="expenseBody"><tr><td colspan="18" class="empty">登入後讀取資料...</td></tr></tbody></table></div></div>
+
+
+<div id="withdrawals" class="sectionhead"><h2>提領管理</h2><div class="actions"><button class="btn" onclick="openModal('accountModal')">＋新增帳戶</button></div></div>
+
+<div class="grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+  <div class="card panel">
+    <h3 style="margin-top:0">帳戶資料庫</h3>
+    <div class="sub" style="margin-bottom:10px">集中管理寶儀、小白、靖晏、阿牛或公司的收款帳戶。提領時直接選，不用每次重打。</div>
+    <div id="accountCards" class="accountcards"></div>
+  </div>
+  <div class="card panel">
+    <h3 style="margin-top:0">提領規則</h3>
+    <div class="notice">
+      平台型收入會進入「可提領池」。<br>
+      你可以：
+      <b>① 本次提領</b> → 選帳戶後建立提領批次；
+      <b>② 保留平台／製作費</b> → 從可提領池移除，但保留歷史紀錄。<br>
+      YouTube 可直接標記「保留平台／製作費」，不必提領。
+    </div>
+  </div>
+</div>
+
+<div class="sectionhead"><h2 style="font-size:15px">可提領項目</h2></div>
+<div class="card panel">
+  <div class="summarybar">
+    <div><span class="mutedtext">已勾選金額</span><br><strong id="withdrawSelectedTotal">NT$ 0</strong></div>
+    <div class="actions">
+      <select class="field" id="withdrawAccountSelect"><option value="">選擇提領帳戶</option></select>
+      <button class="btn primary" id="withdrawSelectedBtn">完成本次提領</button>
+    </div>
+  </div>
+  <div class="scroll"><table style="min-width:1100px">
+    <thead><tr><th class="checkcell">選</th><th>日期</th><th>平台</th><th>專案名稱</th><th>含稅／收入金額</th><th>目前狀態</th><th>操作</th></tr></thead>
+    <tbody id="withdrawableBody"></tbody>
+  </table></div>
+</div>
+
+<div class="sectionhead"><h2 style="font-size:15px">提領／保留紀錄</h2></div>
+<div class="card tablebox"><div class="scroll"><table style="min-width:1200px">
+  <thead><tr><th>日期</th><th>類型</th><th>平台／項目</th><th>金額</th><th>帳戶</th><th>操作人</th><th>備註</th></tr></thead>
+  <tbody id="withdrawHistoryBody"></tbody>
+</table></div></div>
+
+<div id="settlement" class="sectionhead"><h2>分潤規則</h2></div>
+<div class="card panel">
+<div class="membergrid"><div class="member"><b>小白</b><small>10%－二代健保＋代墊</small></div><div class="member"><b>靖晏</b><small>10%－二代健保＋代墊</small></div><div class="member"><b>阿牛</b><small>10%－二代健保＋代墊</small></div><div class="member"><b>寶儀</b><small>剩餘分配＋代墊</small></div></div>
+</div>
+
+<div id="accounting" class="sectionhead"><h2>會計待辦</h2></div>
+<div class="card tablebox"><div class="scroll"><table><thead><tr><th>來源</th><th>日期</th><th>對象</th><th>金額</th><th>待確認</th><th>負責人</th></tr></thead><tbody id="accountingBody"><tr><td colspan="6" class="empty">目前沒有會計待辦</td></tr></tbody></table></div></div>
+
+<footer>無限寶藏財務總覽｜Firebase 共編版 v4｜獨立提領管理、帳戶資料庫、平台保留</footer>
+</main>
+</div>
+
+
+<div class="modal" id="accountModal"><div class="dialog" style="width:min(720px,96vw)">
+<div class="dialoghead"><b id="accountModalTitle">新增帳戶</b><button class="btn" onclick="closeModal('accountModal')">關閉</button></div>
+<div class="dialogbody"><div class="formgrid">
+<div><label>帳戶歸屬</label><select id="aOwner"><option>公司</option><option>寶儀</option><option>小白</option><option>靖晏</option><option>阿牛</option></select></div>
+<div><label>銀行／機構</label><input id="aBank" placeholder="例如 玉山銀行"></div>
+<div><label>帳戶名稱</label><input id="aName" placeholder="戶名"></div>
+<div><label>帳號</label><input id="aNumber" placeholder="銀行帳號"></div>
+<div><label>用途</label><input id="aPurpose" placeholder="例如 平台提領／分潤"></div>
+<div><label>狀態</label><select id="aActive"><option value="true">使用中</option><option value="false">停用</option></select></div>
+<div class="full"><label>備註</label><textarea id="aNote"></textarea></div>
+</div></div>
+<div class="dialogfoot"><button class="btn" onclick="closeModal('accountModal')">取消</button><button class="btn primary" id="saveAccountBtn">儲存帳戶</button></div>
+</div></div>
+
+<div class="modal" id="incomeModal"><div class="dialog">
+<div class="dialoghead"><b id="incomeModalTitle">新增收入</b><button class="btn" onclick="closeModal('incomeModal')">關閉</button></div>
+<div class="dialogbody"><div class="formgrid">
+<div><label>收入日期</label><input id="iDate" type="date"></div>
+<div><label>收入類型</label><select id="iType"><option>業配合作</option><option>Apple Podcast</option><option>YouTube</option><option>Firstory</option><option>SoundOn</option><option>會員收入</option><option>贊助</option><option>其他</option></select></div>
+<div><label>負責成員</label><select id="iOwner"><option>寶儀</option><option>小白</option><option>靖晏</option><option>阿牛</option></select></div>
+<div><label>付款方／平台</label><input id="iClient"></div><div><label>專案名稱</label><input id="iCompany" placeholder="例如：XX品牌 EP220 業配"></div><div><label>統編</label><input id="iTaxId"></div>
+
+<div><label>稅率</label><select id="iRate"><option value="0.05">5%</option><option value="0">0%</option></select></div>
+<div><label>未稅金額</label><input id="iNet" type="number" value="0"></div>
+<div><label>稅額</label><input id="iTax" type="number" value="0"></div>
+<div><label>含稅金額</label><input id="iGross" type="number" value="0"></div>
+<div><label>收款狀態</label><select id="iPaid"><option>未收款</option><option>已收款</option></select></div>
+
+<div><label>發票狀態</label><select id="iInvoice"><option>待確認</option><option>待開立</option><option>已開立</option><option>免開／境外</option></select></div>
+
+<div><label>憑證確認</label><select id="iAccounting"><option>待確認</option><option>資料齊全</option></select></div>
+<div class="full"><label>備註</label><textarea id="iNote"></textarea></div>
+</div></div>
+<div class="dialogfoot"><button class="btn" onclick="closeModal('incomeModal')">取消</button><button class="btn primary" id="saveIncomeBtn">儲存</button></div>
+</div></div>
+
+<div class="modal" id="expenseModal"><div class="dialog">
+<div class="dialoghead"><b id="expenseModalTitle">新增支出</b><button class="btn" onclick="closeModal('expenseModal')">關閉</button></div>
+<div class="dialogbody"><div class="formgrid">
+<div><label>發生日期</label><input id="eDate" type="date"></div>
+<div><label>支出類型</label><select id="eType"><option>剪輯</option><option>錄音室</option><option>攝影</option><option>設計</option><option>交通</option><option>器材</option><option>來賓費</option><option>軟體</option><option>行銷</option><option>其他</option></select></div>
+<div><label>負責成員</label><select id="eOwner"><option>寶儀</option><option>小白</option><option>靖晏</option><option>阿牛</option></select></div>
+<div><label>收款人／廠商</label><input id="ePayee"></div><div><label>對象</label><select id="eParty"><option>公司</option><option>個人</option><option>成員代墊</option></select></div><div><label>統編／識別</label><input id="eId"></div>
+<div><label>專案／集數</label><input id="eProject"></div>
+<div><label>稅率</label><select id="eRate"><option value="0.05">5%</option><option value="0">0%</option></select></div>
+<div><label>未稅金額</label><input id="eNet" type="number" value="0"></div>
+<div><label>稅額</label><input id="eTax" type="number" value="0"></div>
+<div><label>含稅／實付金額</label><input id="eGross" type="number" value="0"></div>
+<div><label>付款狀態</label><select id="ePaid"><option>未付款</option><option>已付款</option></select></div>
+<div><label>付款人／代墊人</label><select id="ePayer"><option>公司</option><option>寶儀</option><option>小白</option><option>靖晏</option><option>阿牛</option></select></div>
+<div><label>憑證類型</label><select id="eVoucher"><option>發票</option><option>勞報</option><option>收據</option><option>無憑證</option><option>待確認</option></select></div>
+<div><label>勞報狀態</label><select id="eLabor"><option>不適用</option><option>待資料</option><option>待申報</option><option>已完成</option></select></div>
+<div><label>發票／收據狀態</label><select id="eInvoice"><option>待取得</option><option>已取得</option><option>不適用</option></select></div>
+<div><label>憑證確認</label><select id="eAccounting"><option>待確認</option><option>資料齊全</option></select></div>
+<div class="full"><label>備註</label><textarea id="eNote"></textarea></div>
+</div></div>
+<div class="dialogfoot"><button class="btn" onclick="closeModal('expenseModal')">取消</button><button class="btn primary" id="saveExpenseBtn">儲存</button></div>
+</div></div>
+
+<script>
+function openModal(id){document.getElementById(id).classList.add('show');const t=new Date().toISOString().slice(0,10);if(id==='incomeModal'&&!document.getElementById('iDate').value)document.getElementById('iDate').value=t;if(id==='expenseModal'&&!document.getElementById('eDate').value)document.getElementById('eDate').value=t}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+window.openModal=openModal;window.closeModal=closeModal;
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp, query, orderBy, writeBatch } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBdmR8UPcP-I25f4N5lp2cSrxWTlmpHFeA",
+  authDomain: "havefunla.firebaseapp.com",
+  projectId: "havefunla",
+  storageBucket: "havefunla.firebasestorage.app",
+  messagingSenderId: "674312211480",
+  appId: "1:674312211480:web:708004ab7f5d0e102d876d",
+  measurementId: "G-F6ETE6E64M"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+let incomes=[], expenses=[], accounts=[], withdrawalHistory=[], unsubI=null, unsubE=null, unsubA=null, unsubW=null, editingIncomeId=null, editingExpenseId=null, editingAccountId=null;
+const $=id=>document.getElementById(id);
+const money=n=>'NT$ '+Math.round(Number(n||0)).toLocaleString('zh-TW');
+const platformTypes=['Apple Podcast','YouTube','Firstory','SoundOn'];
+function isPlatformIncome(x){return platformTypes.includes(x.type)}
+
+function formatTimestamp(ts){
+  if(!ts)return '—';
+  try{
+    const d=ts.toDate ? ts.toDate() : new Date(ts);
+    return d.toLocaleString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  }catch(e){return '—'}
+}
+
+function badge(t){let c='info';if(['已收款','已開立','已付款','已取得','資料齊全'].includes(t))c='ok';else if(['未收款','未付款','待開立','待取得','待確認','待資料','待申報'].includes(t))c='wait';else if(t==='無憑證')c='bad';return `<span class="badge ${c}">${t||'—'}</span>`}
+function filtered(arr){let y=$('yearFilter').value,m=$('monthFilter').value;return arr.filter(x=>{if(!x.date)return false;let d=new Date(x.date+'T00:00:00');return String(d.getFullYear())===y&&(m==='all'||d.getMonth()+1===Number(m))})}
+function renderAll(){
+  const I=filtered(incomes),E=filtered(expenses);
+  $('incomeBody').innerHTML=I.length?I.map(x=>`<tr><td>${x.date}</td><td>${x.type}</td><td>${x.client||'—'}</td><td>${x.company||x.project||'—'}</td><td>${x.taxId||'—'}</td><td class="money">${money(x.net)}</td><td class="money">${money(x.tax)}</td><td class="money">${money(x.gross)}</td><td>${badge(x.paid)}</td><td>${badge(x.invoice)}</td><td>${x.owner}</td><td>${badge(x.accounting)}</td><td>${x.createdBy||'—'}</td><td>${x.updatedBy?`${x.updatedBy}<br><span style="color:#748094">${formatTimestamp(x.updatedAt)}</span>`:'—'}</td><td><button class="btn edit" onclick="editIncome('${x.id}')">編輯</button> <button class="btn delete" onclick="removeIncome('${x.id}')">刪除</button></td></tr>`).join(''):`<tr><td colspan="15" class="empty">尚未登記收入</td></tr>`;
+  $('expenseBody').innerHTML=E.length?E.map(x=>`<tr><td>${x.date}</td><td>${x.type}</td><td>${x.payee||'—'}</td><td>${x.party}</td><td>${x.voucher}</td><td>${x.project||'—'}</td><td class="money">${money(x.net)}</td><td class="money">${money(x.tax)}</td><td class="money">${money(x.gross)}</td><td>${badge(x.paid)}</td><td>${x.payer}</td><td>${badge(x.labor)}</td><td>${badge(x.invoice)}</td><td>${x.owner}</td><td>${badge(x.accounting)}</td><td>${x.createdBy||'—'}</td><td>${x.updatedBy?`${x.updatedBy}<br><span style="color:#748094">${formatTimestamp(x.updatedAt)}</span>`:'—'}</td><td><button class="btn edit" onclick="editExpense('${x.id}')">編輯</button> <button class="btn delete" onclick="removeExpense('${x.id}')">刪除</button></td></tr>`).join(''):`<tr><td colspan="18" class="empty">尚未登記支出</td></tr>`;
+  let inc=I.reduce((s,x)=>s+Number(x.gross||0),0),
+      rec=I.filter(x=>x.paid==='已收款').reduce((s,x)=>s+Number(x.gross||0),0),
+      unw=I.filter(x=>x.invoice==='待開立'||x.invoice==='待確認').length,
+      ar=I.filter(x=>x.paid==='未收款').reduce((s,x)=>s+Number(x.gross||0),0),
+      ap=E.filter(x=>x.paid==='未付款').reduce((s,x)=>s+Number(x.gross||0),0),
+      paidE=E.filter(x=>x.paid==='已付款').reduce((s,x)=>s+Number(x.gross||0),0),
+      bank=I.filter(x=>x.paid==='已收款').reduce((s,x)=>s+Number(x.gross||0),0);
+  $('kIncome').textContent=money(inc);$('kReceived').textContent=money(rec);$('kUnwithdrawn').textContent=unw+' 筆';$('kReceivable').textContent=money(ar);$('kPayable').textContent=money(ap);$('kNet').textContent=money(bank-paidE);
+
+  let todos=[];
+  I.filter(x=>x.accounting!=='資料齊全').forEach(x=>todos.push(['收入',x.date,x.client,x.gross,'憑證'+x.accounting,x.owner]));
+  E.filter(x=>x.accounting!=='資料齊全'||x.invoice==='待取得'||x.labor==='待資料').forEach(x=>todos.push(['支出',x.date,x.payee,x.gross,[x.accounting!=='資料齊全'?'憑證'+x.accounting:'',x.invoice==='待取得'?'待憑證':'',x.labor==='待資料'?'待勞報資料':''].filter(Boolean).join('、'),x.owner]));
+  $('accountingBody').innerHTML=todos.length?todos.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]||'—'}</td><td class="money">${money(r[3])}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`).join(''):`<tr><td colspan="6" class="empty">目前沒有會計待辦</td></tr>`;
+  renderWithdrawals();
+}
+function subscribe(){
+  if(unsubI)unsubI(); if(unsubE)unsubE(); if(unsubA)unsubA(); if(unsubW)unsubW();
+  unsubI=onSnapshot(query(collection(db,'incomes'),orderBy('createdAt','desc')),snap=>{
+    incomes=snap.docs.map(d=>({id:d.id,...d.data()}));renderAll();
+  },err=>{$('incomeBody').innerHTML=`<tr><td colspan="16" class="empty">讀取失敗：${err.message}</td></tr>`});
+  unsubE=onSnapshot(query(collection(db,'expenses'),orderBy('createdAt','desc')),snap=>{
+    expenses=snap.docs.map(d=>({id:d.id,...d.data()}));renderAll();
+  },err=>{$('expenseBody').innerHTML=`<tr><td colspan="16" class="empty">讀取失敗：${err.message}</td></tr>`});
+}
+
+$('loginBtn').addEventListener('click',async()=>{
+  $('loginError').textContent='';
+  try{await signInWithEmailAndPassword(auth,$('loginEmail').value.trim(),$('loginPassword').value)}
+  catch(e){$('loginError').textContent='登入失敗：'+e.message}
+});
+$('loginPassword').addEventListener('keydown',e=>{if(e.key==='Enter')$('loginBtn').click()});
+$('logoutBtn').addEventListener('click',()=>signOut(auth));
+onAuthStateChanged(auth,user=>{
+  if(user){
+    $('loginOverlay').classList.remove('show');
+    $('userBox').textContent='目前登入：'+user.email;
+    subscribe();
+  }else{
+    if(unsubI)unsubI(); if(unsubE)unsubE(); if(unsubA)unsubA(); if(unsubW)unsubW();
+    incomes=[];expenses=[];accounts=[];withdrawalHistory=[];renderAll();renderWithdrawals();
+    $('userBox').textContent='';
+    $('loginOverlay').classList.add('show');
+  }
+});
+
+function calcPair(netId,taxId,grossId,rateId,source){
+  const r=Number($(rateId).value||0);
+  if(source==='net'){const n=Number($(netId).value||0),tax=Math.round(n*r);$(taxId).value=tax;$(grossId).value=n+tax}
+  else{const g=Number($(grossId).value||0),n=r?Math.round(g/(1+r)):g;$(netId).value=n;$(taxId).value=g-n}
+}
+$('iNet').addEventListener('input',()=>calcPair('iNet','iTax','iGross','iRate','net'));
+$('iGross').addEventListener('input',()=>calcPair('iNet','iTax','iGross','iRate','gross'));
+$('iRate').addEventListener('change',()=>calcPair('iNet','iTax','iGross','iRate','net'));
+$('eNet').addEventListener('input',()=>calcPair('eNet','eTax','eGross','eRate','net'));
+$('eGross').addEventListener('input',()=>calcPair('eNet','eTax','eGross','eRate','gross'));
+$('eRate').addEventListener('change',()=>calcPair('eNet','eTax','eGross','eRate','net'));
+
+
+function resetIncomeForm(){
+  editingIncomeId=null;
+  $('incomeModalTitle').textContent='新增收入';
+  $('saveIncomeBtn').textContent='儲存';
+  ['iClient','iCompany','iTaxId','iNote'].forEach(id=>$(id).value='');
+  $('iNet').value=0;$('iTax').value=0;$('iGross').value=0;
+  $('iType').value='業配合作';$('iOwner').value='寶儀';$('iRate').value='0.05';
+  $('iPaid').value='未收款';$('iInvoice').value='待確認';$('iAccounting').value='待確認';
+  $('iDate').value=new Date().toISOString().slice(0,10);
+}
+window.resetIncomeForm=resetIncomeForm;
+function resetExpenseForm(){
+  editingExpenseId=null;
+  $('expenseModalTitle').textContent='新增支出';
+  $('saveExpenseBtn').textContent='儲存';
+  ['ePayee','eId','eProject','eNote'].forEach(id=>$(id).value='');
+  $('eNet').value=0;$('eTax').value=0;$('eGross').value=0;
+  $('eType').value='剪輯';$('eOwner').value='寶儀';$('eParty').value='公司';$('eRate').value='0.05';
+  $('ePaid').value='未付款';$('ePayer').value='公司';$('eVoucher').value='發票';$('eLabor').value='不適用';$('eInvoice').value='待取得';$('eAccounting').value='待處理';
+  $('eDate').value=new Date().toISOString().slice(0,10);
+}
+window.resetExpenseForm=resetExpenseForm;
+window.editIncome=function(id){
+  const x=incomes.find(v=>v.id===id); if(!x)return;
+  editingIncomeId=id;
+  $('incomeModalTitle').textContent='編輯收入';
+  $('saveIncomeBtn').textContent='儲存修改';
+  $('iDate').value=x.date||'';$('iType').value=x.type||'業配合作';$('iOwner').value=x.owner||'寶儀';
+  $('iClient').value=x.client||'';$('iCompany').value=x.company||x.project||'';$('iTaxId').value=x.taxId||'';
+  $('iRate').value=String(x.rate ?? 0.05);$('iNet').value=x.net||0;$('iTax').value=x.tax||0;$('iGross').value=x.gross||0;
+  $('iPaid').value=x.paid||'未收款';$('iInvoice').value=x.invoice||'待確認';
+  $('iAccounting').value=x.accounting||'待確認';$('iNote').value=x.note||'';
+  openModal('incomeModal');
+}
+window.editExpense=function(id){
+  const x=expenses.find(v=>v.id===id); if(!x)return;
+  editingExpenseId=id;
+  $('expenseModalTitle').textContent='編輯支出';
+  $('saveExpenseBtn').textContent='儲存修改';
+  $('eDate').value=x.date||'';$('eType').value=x.type||'剪輯';$('eOwner').value=x.owner||'寶儀';
+  $('ePayee').value=x.payee||'';$('eParty').value=x.party||'公司';$('eId').value=x.pid||'';$('eProject').value=x.project||'';
+  $('eRate').value=String(x.rate ?? 0.05);$('eNet').value=x.net||0;$('eTax').value=x.tax||0;$('eGross').value=x.gross||0;
+  $('ePaid').value=x.paid||'未付款';$('ePayer').value=x.payer||'公司';$('eVoucher').value=x.voucher||'發票';
+  $('eLabor').value=x.labor||'不適用';$('eInvoice').value=x.invoice||'待取得';$('eAccounting').value=x.accounting||'待處理';$('eNote').value=x.note||'';
+  openModal('expenseModal');
+}
+window.removeIncome=async function(id){
+  if(!confirm('確定要刪除這筆收入嗎？刪除後無法復原。'))return;
+  try{await deleteDoc(doc(db,'incomes',id));}catch(e){alert('刪除失敗：'+e.message)}
+}
+window.removeExpense=async function(id){
+  if(!confirm('確定要刪除這筆支出嗎？刪除後無法復原。'))return;
+  try{await deleteDoc(doc(db,'expenses',id));}catch(e){alert('刪除失敗：'+e.message)}
+}
+
+$('saveIncomeBtn').addEventListener('click',async()=>{
+  const u=auth.currentUser;if(!u)return alert('請先登入');
+  const payload={
+    date:$('iDate').value,type:$('iType').value,owner:$('iOwner').value,client:$('iClient').value.trim(),company:$('iCompany').value.trim(),taxId:$('iTaxId').value.trim(),project:$('iCompany').value.trim(),
+    rate:Number($('iRate').value),net:Number($('iNet').value||0),tax:Number($('iTax').value||0),gross:Number($('iGross').value||0),
+    paid:$('iPaid').value,invoice:$('iInvoice').value,accounting:$('iAccounting').value,note:$('iNote').value.trim()
+  };
+  try{
+    if(editingIncomeId){
+      await updateDoc(doc(db,'incomes',editingIncomeId),{...payload,updatedBy:u.email,updatedByUid:u.uid,updatedAt:serverTimestamp()});
+    }else{
+      await addDoc(collection(db,'incomes'),{...payload,fundDisposition:isPlatformIncome(payload)?'可提領':'不適用',createdBy:u.email,createdByUid:u.uid,createdAt:serverTimestamp(),updatedBy:'',updatedAt:null});
+    }
+    closeModal('incomeModal');resetIncomeForm();
+  }catch(e){alert('收入儲存失敗：'+e.message)}
+});
+
+$('saveExpenseBtn').addEventListener('click',async()=>{
+  const u=auth.currentUser;if(!u)return alert('請先登入');
+  const payload={
+    date:$('eDate').value,type:$('eType').value,owner:$('eOwner').value,payee:$('ePayee').value.trim(),party:$('eParty').value,pid:$('eId').value.trim(),project:$('eProject').value.trim(),
+    rate:Number($('eRate').value),net:Number($('eNet').value||0),tax:Number($('eTax').value||0),gross:Number($('eGross').value||0),
+    paid:$('ePaid').value,payer:$('ePayer').value,voucher:$('eVoucher').value,labor:$('eLabor').value,invoice:$('eInvoice').value,accounting:$('eAccounting').value,note:$('eNote').value.trim()
+  };
+  try{
+    if(editingExpenseId){
+      await updateDoc(doc(db,'expenses',editingExpenseId),{...payload,updatedBy:u.email,updatedByUid:u.uid,updatedAt:serverTimestamp()});
+    }else{
+      await addDoc(collection(db,'expenses'),{...payload,createdBy:u.email,createdByUid:u.uid,createdAt:serverTimestamp(),updatedBy:'',updatedAt:null});
+    }
+    closeModal('expenseModal');resetExpenseForm();
+  }catch(e){alert('支出儲存失敗：'+e.message)}
+});
+
+$('yearFilter').addEventListener('change',renderAll);$('monthFilter').addEventListener('change',renderAll);
+
+
+function renderWithdrawals(){
+  if(!$('accountCards')) return;
+  const activeAccounts=accounts.filter(a=>a.active!==false);
+  $('accountCards').innerHTML=accounts.length?accounts.map(a=>`<div class="accountcard">
+    <b>${a.owner||'—'}｜${a.bank||'—'}</b>
+    <small>${a.name||'—'}｜${a.number||'—'}</small>
+    <small>${a.purpose||''}</small>
+    <div style="margin-top:8px"><button class="btn edit" onclick="editAccount('${a.id}')">編輯</button> <button class="btn delete" onclick="removeAccount('${a.id}')">刪除</button></div>
+  </div>`).join(''):'<div class="empty">尚未建立帳戶資料</div>';
+  $('withdrawAccountSelect').innerHTML='<option value="">選擇提領帳戶</option>'+activeAccounts.map(a=>`<option value="${a.id}">${a.owner}｜${a.bank}｜${a.name||''} ${a.number||''}</option>`).join('');
+
+  const eligible=incomes.filter(x=>isPlatformIncome(x) && (x.fundDisposition===undefined || x.fundDisposition==='可提領'));
+  $('withdrawableBody').innerHTML=eligible.length?eligible.map(x=>`<tr>
+    <td class="checkcell"><input type="checkbox" class="withdrawCheck" value="${x.id}" data-amount="${Number(x.gross||0)}"></td>
+    <td>${x.date||'—'}</td><td>${x.type}</td><td>${x.company||x.project||x.client||'—'}</td>
+    <td class="money">${money(x.gross)}</td><td>${badge('可提領')}</td>
+    <td><button class="btn edit" onclick="holdPlatform('${x.id}')">保留平台／製作費</button></td>
+  </tr>`).join(''):'<tr><td colspan="7" class="empty">目前沒有可提領項目</td></tr>';
+  document.querySelectorAll('.withdrawCheck').forEach(c=>c.addEventListener('change',updateWithdrawSelectedTotal));
+
+  $('withdrawHistoryBody').innerHTML=withdrawalHistory.length?withdrawalHistory.map(w=>`<tr>
+    <td>${formatTimestamp(w.createdAt)}</td>
+    <td>${w.kind||'—'}</td>
+    <td>${w.summary||'—'}</td>
+    <td class="money">${money(w.amount)}</td>
+    <td>${w.accountLabel||'—'}</td>
+    <td>${w.createdBy||'—'}</td>
+    <td>${w.note||'—'}</td>
+  </tr>`).join(''):'<tr><td colspan="7" class="empty">尚無提領／保留紀錄</td></tr>';
+  updateWithdrawSelectedTotal();
+}
+function updateWithdrawSelectedTotal(){
+  const total=[...document.querySelectorAll('.withdrawCheck:checked')].reduce((s,c)=>s+Number(c.dataset.amount||0),0);
+  if($('withdrawSelectedTotal')) $('withdrawSelectedTotal').textContent=money(total);
+}
+window.editAccount=function(id){
+  const a=accounts.find(x=>x.id===id);if(!a)return;
+  editingAccountId=id;$('accountModalTitle').textContent='編輯帳戶';
+  $('aOwner').value=a.owner||'公司';$('aBank').value=a.bank||'';$('aName').value=a.name||'';$('aNumber').value=a.number||'';$('aPurpose').value=a.purpose||'';$('aActive').value=String(a.active!==false);$('aNote').value=a.note||'';
+  openModal('accountModal');
+}
+window.removeAccount=async function(id){
+  if(!confirm('確定刪除這個帳戶資料？'))return;
+  try{await deleteDoc(doc(db,'accounts',id));}catch(e){alert('刪除失敗：'+e.message)}
+}
+window.holdPlatform=async function(incomeId){
+  const x=incomes.find(v=>v.id===incomeId);if(!x)return;
+  if(!confirm(`確定將「${x.type}｜${x.company||x.project||x.client||''}」標記為保留平台／製作費？`))return;
+  const u=auth.currentUser;if(!u)return;
+  try{
+    const batch=writeBatch(db);
+    batch.update(doc(db,'incomes',incomeId),{fundDisposition:'保留平台',fundUpdatedBy:u.email,fundUpdatedAt:serverTimestamp()});
+    const wr=doc(collection(db,'withdrawals'));
+    batch.set(wr,{kind:'保留平台／製作費',incomeIds:[incomeId],amount:Number(x.gross||0),summary:`${x.type}｜${x.company||x.project||x.client||''}`,accountId:'',accountLabel:'',note:'不提領，保留於平台作為製作費用',createdBy:u.email,createdByUid:u.uid,createdAt:serverTimestamp()});
+    await batch.commit();
+  }catch(e){alert('更新失敗：'+e.message)}
+}
+$('saveAccountBtn').addEventListener('click',async()=>{
+  const u=auth.currentUser;if(!u)return alert('請先登入');
+  const payload={owner:$('aOwner').value,bank:$('aBank').value.trim(),name:$('aName').value.trim(),number:$('aNumber').value.trim(),purpose:$('aPurpose').value.trim(),active:$('aActive').value==='true',note:$('aNote').value.trim()};
+  try{
+    if(editingAccountId) await updateDoc(doc(db,'accounts',editingAccountId),{...payload,updatedBy:u.email,updatedAt:serverTimestamp()});
+    else await addDoc(collection(db,'accounts'),{...payload,createdBy:u.email,createdByUid:u.uid,createdAt:serverTimestamp()});
+    editingAccountId=null;$('accountModalTitle').textContent='新增帳戶';closeModal('accountModal');
+    ['aBank','aName','aNumber','aPurpose','aNote'].forEach(id=>$(id).value='');
+  }catch(e){alert('帳戶儲存失敗：'+e.message)}
+});
+$('withdrawSelectedBtn').addEventListener('click',async()=>{
+  const ids=[...document.querySelectorAll('.withdrawCheck:checked')].map(c=>c.value);
+  if(!ids.length)return alert('請先勾選要提領的項目');
+  const account=accounts.find(a=>a.id===$('withdrawAccountSelect').value);
+  if(!account)return alert('請選擇提領帳戶');
+  const items=ids.map(id=>incomes.find(x=>x.id===id)).filter(Boolean);
+  const total=items.reduce((s,x)=>s+Number(x.gross||0),0);
+  if(!confirm(`本次共提領 ${items.length} 筆，合計 ${money(total)}，提領至「${account.owner}｜${account.bank}｜${account.name}」？`))return;
+  const u=auth.currentUser;if(!u)return;
+  try{
+    const batch=writeBatch(db);
+    items.forEach(x=>batch.update(doc(db,'incomes',x.id),{fundDisposition:'已提領',withdrawalAccountId:account.id,withdrawalAccountLabel:`${account.owner}｜${account.bank}｜${account.name}`,fundUpdatedBy:u.email,fundUpdatedAt:serverTimestamp()}));
+    const wr=doc(collection(db,'withdrawals'));
+    batch.set(wr,{kind:'提領',incomeIds:ids,amount:total,summary:items.map(x=>`${x.type}｜${x.company||x.project||x.client||''}`).join('、'),accountId:account.id,accountLabel:`${account.owner}｜${account.bank}｜${account.name}｜${account.number||''}`,note:'',createdBy:u.email,createdByUid:u.uid,createdAt:serverTimestamp()});
+    await batch.commit();
+    $('withdrawAccountSelect').value='';
+  }catch(e){alert('提領失敗：'+e.message)}
+});
+
+$('exportBtn').addEventListener('click',()=>{
+ let rows=[['類型','日期','交易類型','對象','專案/對象類型','統編/識別','未稅','稅額','含稅','收付款狀態','憑證/發票','勞報','負責人','憑證確認','建立者','備註']];
+ incomes.forEach(x=>rows.push(['收入',x.date,x.type,x.client,x.company||x.project,x.taxId,x.net,x.tax,x.gross,x.paid,x.invoice,'',x.owner,x.accounting,x.createdBy,x.note]));
+ expenses.forEach(x=>rows.push(['支出',x.date,x.type,x.payee,x.party,x.pid,x.net,x.tax,x.gross,x.paid,x.voucher,x.labor,x.owner,x.accounting,x.createdBy,x.note]));
+ let csv='\ufeff'+rows.map(r=>r.map(v=>`"${String(v??'').replaceAll('"','""')}"`).join(',')).join('\n');
+ let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='無限寶藏_會計資料.csv';a.click();
+});
+</script>
+</body>
+</html>
