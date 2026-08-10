@@ -19,7 +19,54 @@ main{padding:28px;max-width:1600px;width:100%}.head{display:flex;justify-content
 .modal,.loginOverlay{display:none;position:fixed;inset:0;background:rgba(12,18,26,.48);align-items:center;justify-content:center;padding:20px;z-index:20}.modal.show,.loginOverlay.show{display:flex}.dialog{width:min(940px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:15px}.loginCard{width:min(420px,92vw);background:white;border-radius:16px;padding:24px}.loginCard h2{margin-top:0}.loginCard input{width:100%;padding:11px;border:1px solid var(--line);border-radius:9px;margin:7px 0 12px}.loginCard .error{color:var(--red);font-size:12px;min-height:18px}
 .dialoghead,.dialogfoot{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.dialogfoot{border-bottom:0;border-top:1px solid var(--line);justify-content:flex-end;gap:8px}.dialogbody{padding:18px 20px}.formgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.formgrid .full{grid-column:1/-1}.formgrid label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}.formgrid input,.formgrid select,.formgrid textarea{width:100%;border:1px solid #dbe0e7;border-radius:8px;padding:9px;font:inherit;font-size:13px}.formgrid textarea{min-height:70px}
 .empty{padding:24px;text-align:center;color:var(--muted)}.userbox{font-size:12px;color:var(--muted)}footer{color:#8a95a5;font-size:11px;margin:28px 0}
-@media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}}@media(max-width:760px){.app{display:block}aside{display:none}main{padding:16px}.head{display:block}.actions{margin-top:12px}.kpis{grid-template-columns:repeat(2,1fr)}.formgrid{grid-template-columns:1fr}.membergrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:1100px){
+  .kpis{grid-template-columns:repeat(3,1fr)}
+  .accountcards{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:760px){
+  .app{display:block}
+  aside{display:none}
+  main{padding:14px}
+  .head{display:block}
+  .head h1{font-size:22px}
+  .actions{margin-top:12px}
+  .actions .btn{flex:1 1 calc(50% - 8px)}
+  .filters{display:grid;grid-template-columns:1fr 1fr}
+  .filters .field{width:100%}
+  .kpis{grid-template-columns:repeat(2,1fr);gap:8px}
+  .kpi{padding:13px}
+  .kpi .num{font-size:18px}
+  .formgrid{grid-template-columns:1fr}
+  .membergrid,.accountcards{grid-template-columns:1fr}
+  .grid{grid-template-columns:1fr!important}
+  .sectionhead{align-items:flex-start;gap:8px}
+  .sectionhead h2{font-size:16px}
+  .summarybar{align-items:stretch}
+  .summarybar .actions{display:grid;grid-template-columns:1fr}
+  .summarybar .field,.summarybar .btn{width:100%}
+
+  /* 手機不顯示橫向大表，改卡片 */
+  .desktopTable{display:none!important}
+  .mobileCards{display:block}
+  .mobileCard{background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px;margin-bottom:10px}
+  .mobileCard .topline{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+  .mobileCard .title{font-weight:800;font-size:14px;line-height:1.35}
+  .mobileCard .amount{font-weight:850;font-size:16px;white-space:nowrap}
+  .mobileCard .meta{display:grid;grid-template-columns:1fr 1fr;gap:7px 10px;margin-top:10px;font-size:12px}
+  .mobileCard .meta div span{display:block;color:var(--muted);font-size:10px;margin-bottom:2px}
+  .mobileCard .actionsRow{display:flex;gap:7px;margin-top:10px}
+  .mobileCard .actionsRow .btn{flex:1}
+  .mobileCard details{margin-top:8px}
+  .mobileCard summary{cursor:pointer;color:var(--blue);font-size:12px}
+  .mobileCard .more{margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-size:12px;line-height:1.6}
+  .mobileCard .checkrow{display:flex;gap:8px;align-items:center;margin-top:8px}
+  .mobileCard .checkrow input{transform:scale(1.2)}
+  .mobileEmpty{padding:18px;text-align:center;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:12px}
+}
+@media(min-width:761px){
+  .mobileCards{display:none}
+}
+
 </style>
 </head>
 <body>
@@ -79,10 +126,11 @@ main{padding:28px;max-width:1600px;width:100%}.head{display:flex;justify-content
 </div>
 
 <div id="income" class="sectionhead"><h2>收入管理</h2><button class="btn primary" onclick="resetIncomeForm();openModal('incomeModal')">＋新增收入</button></div>
-<div class="card tablebox"><div class="scroll"><table><thead><tr><th>日期</th><th>類型</th><th>付款方／平台</th><th>專案名稱</th><th>統編</th><th>未稅</th><th>稅額</th><th>含稅</th><th>收款</th><th>發票</th><th>負責人</th><th>憑證確認</th><th>建立者</th><th>最後修改</th><th>操作</th></tr></thead><tbody id="incomeBody"><tr><td colspan="15" class="empty">登入後讀取資料...</td></tr></tbody></table></div></div>
+<div class="card tablebox desktopTable"><div class="scroll"><table><thead><tr><th>日期</th><th>類型</th><th>付款方／平台</th><th>專案名稱</th><th>統編</th><th>未稅</th><th>稅額</th><th>含稅</th><th>收款</th><th>發票</th><th>負責人</th><th>憑證確認</th><th>建立者</th><th>最後修改</th><th>操作</th></tr></thead><tbody id="incomeBody"><tr><td colspan="15" class="empty">登入後讀取資料...</td></tr></tbody></table></div></div>
+<div id="incomeCards" class="mobileCards"></div>
 
 <div id="expense" class="sectionhead"><h2>支出管理</h2><button class="btn primary" onclick="resetExpenseForm();openModal('expenseModal')">＋新增支出</button></div>
-<div class="card tablebox"><div class="scroll"><table><thead><tr><th>日期</th><th>類型</th><th>收款人／廠商</th><th>對象</th><th>憑證</th><th>專案</th><th>未稅</th><th>稅額</th><th>含稅</th><th>付款</th><th>付款人／代墊</th><th>勞報</th><th>發票／收據</th><th>負責人</th><th>憑證確認</th><th>建立者</th><th>最後修改</th><th>操作</th></tr></thead><tbody id="expenseBody"><tr><td colspan="18" class="empty">登入後讀取資料...</td></tr></tbody></table></div></div>
+<div class="card tablebox desktopTable"><div class="scroll"><table><thead><tr><th>日期</th><th>類型</th><th>收款人／廠商</th><th>對象</th><th>憑證</th><th>專案</th><th>未稅</th><th>稅額</th><th>含稅</th><th>付款</th><th>付款人／代墊</th><th>勞報</th><th>發票／收據</th><th>負責人</th><th>憑證確認</th><th>建立者</th><th>最後修改</th><th>操作</th></tr></thead><tbody id="expenseBody"><tr><td colspan="18" class="empty">登入後讀取資料...</td></tr></tbody></table></div></div>
 
 
 <div id="withdrawals" class="sectionhead"><h2>提領管理</h2><div class="actions"><button class="btn" onclick="openModal('accountModal')">＋新增帳戶</button></div></div>
@@ -114,17 +162,18 @@ main{padding:28px;max-width:1600px;width:100%}.head{display:flex;justify-content
       <button class="btn primary" id="withdrawSelectedBtn">完成本次提領</button>
     </div>
   </div>
-  <div class="scroll"><table style="min-width:1100px">
+  <div class="scroll desktopTable"><table style="min-width:1100px">
     <thead><tr><th class="checkcell">選</th><th>日期</th><th>平台</th><th>專案名稱</th><th>含稅／收入金額</th><th>目前狀態</th><th>操作</th></tr></thead>
     <tbody id="withdrawableBody"></tbody>
   </table></div>
+  <div id="withdrawCards" class="mobileCards"></div>
 </div>
 
 <div class="sectionhead"><h2 style="font-size:15px">提領／保留紀錄</h2></div>
-<div class="card tablebox"><div class="scroll"><table style="min-width:1200px">
+<div class="card tablebox"><div class="scroll desktopTable"><table style="min-width:1200px">
   <thead><tr><th>日期</th><th>類型</th><th>平台／項目</th><th>金額</th><th>帳戶</th><th>操作人</th><th>備註</th></tr></thead>
   <tbody id="withdrawHistoryBody"></tbody>
-</table></div></div>
+</table></div><div id="withdrawHistoryCards" class="mobileCards"></div></div>
 
 <div id="settlement" class="sectionhead"><h2>分潤規則</h2></div>
 <div class="card panel">
@@ -132,9 +181,10 @@ main{padding:28px;max-width:1600px;width:100%}.head{display:flex;justify-content
 </div>
 
 <div id="accounting" class="sectionhead"><h2>會計待辦</h2></div>
-<div class="card tablebox"><div class="scroll"><table><thead><tr><th>來源</th><th>日期</th><th>對象</th><th>金額</th><th>待確認</th><th>負責人</th></tr></thead><tbody id="accountingBody"><tr><td colspan="6" class="empty">目前沒有會計待辦</td></tr></tbody></table></div></div>
+<div class="card tablebox desktopTable"><div class="scroll"><table><thead><tr><th>來源</th><th>日期</th><th>對象</th><th>金額</th><th>待確認</th><th>負責人</th></tr></thead><tbody id="accountingBody"><tr><td colspan="6" class="empty">目前沒有會計待辦</td></tr></tbody></table></div></div>
+<div id="accountingCards" class="mobileCards"></div>
 
-<footer>無限寶藏財務總覽｜Firebase 共編版 v4｜獨立提領管理、帳戶資料庫、平台保留</footer>
+<footer>無限寶藏財務總覽｜Firebase 共編版 v5｜手機卡片版・免左右滑</footer>
 </main>
 </div>
 
@@ -255,7 +305,42 @@ function renderAll(){
   let todos=[];
   I.filter(x=>x.accounting!=='資料齊全').forEach(x=>todos.push(['收入',x.date,x.client,x.gross,'憑證'+x.accounting,x.owner]));
   E.filter(x=>x.accounting!=='資料齊全'||x.invoice==='待取得'||x.labor==='待資料').forEach(x=>todos.push(['支出',x.date,x.payee,x.gross,[x.accounting!=='資料齊全'?'憑證'+x.accounting:'',x.invoice==='待取得'?'待憑證':'',x.labor==='待資料'?'待勞報資料':''].filter(Boolean).join('、'),x.owner]));
-  $('accountingBody').innerHTML=todos.length?todos.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]||'—'}</td><td class="money">${money(r[3])}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`).join(''):`<tr><td colspan="6" class="empty">目前沒有會計待辦</td></tr>`;
+  
+  if($('incomeCards')){
+    $('incomeCards').innerHTML=I.length?I.map(x=>`<div class="mobileCard">
+      <div class="topline"><div><div class="title">${x.company||x.project||x.client||'未命名收入'}</div><div class="mutedtext">${x.type}｜${x.date||'—'}</div></div><div class="amount">${money(x.gross)}</div></div>
+      <div class="meta">
+        <div><span>付款方／平台</span>${x.client||'—'}</div>
+        <div><span>收款</span>${badge(x.paid)}</div>
+        <div><span>發票</span>${badge(x.invoice)}</div>
+        <div><span>負責人</span>${x.owner||'—'}</div>
+      </div>
+      <details><summary>更多資訊</summary><div class="more">未稅：${money(x.net)}<br>稅額：${money(x.tax)}<br>統編：${x.taxId||'—'}<br>憑證：${badge(x.accounting)}<br>建立者：${x.createdBy||'—'}${x.updatedBy?`<br>最後修改：${x.updatedBy}｜${formatTimestamp(x.updatedAt)}`:''}</div></details>
+      <div class="actionsRow"><button class="btn edit" onclick="editIncome('${x.id}')">編輯</button><button class="btn delete" onclick="removeIncome('${x.id}')">刪除</button></div>
+    </div>`).join(''):'<div class="mobileEmpty">尚未登記收入</div>';
+  }
+
+  if($('expenseCards')){
+    $('expenseCards').innerHTML=E.length?E.map(x=>`<div class="mobileCard">
+      <div class="topline"><div><div class="title">${x.payee||'未命名支出'}</div><div class="mutedtext">${x.type}｜${x.date||'—'}</div></div><div class="amount">${money(x.gross)}</div></div>
+      <div class="meta">
+        <div><span>付款狀態</span>${badge(x.paid)}</div>
+        <div><span>憑證</span>${x.voucher||'—'}</div>
+        <div><span>付款人／代墊</span>${x.payer||'—'}</div>
+        <div><span>負責人</span>${x.owner||'—'}</div>
+      </div>
+      <details><summary>更多資訊</summary><div class="more">對象：${x.party||'—'}<br>專案：${x.project||'—'}<br>未稅：${money(x.net)}<br>稅額：${money(x.tax)}<br>勞報：${badge(x.labor)}<br>發票／收據：${badge(x.invoice)}<br>憑證確認：${badge(x.accounting)}<br>建立者：${x.createdBy||'—'}${x.updatedBy?`<br>最後修改：${x.updatedBy}｜${formatTimestamp(x.updatedAt)}`:''}</div></details>
+      <div class="actionsRow"><button class="btn edit" onclick="editExpense('${x.id}')">編輯</button><button class="btn delete" onclick="removeExpense('${x.id}')">刪除</button></div>
+    </div>`).join(''):'<div class="mobileEmpty">尚未登記支出</div>';
+  }
+
+$('accountingBody').innerHTML=todos.length?todos.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]||'—'}</td><td class="money">${money(r[3])}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`).join(''):`<tr><td colspan="6" class="empty">目前沒有會計待辦</td></tr>`;
+  if($('accountingCards')){
+    $('accountingCards').innerHTML=todos.length?todos.map(r=>`<div class="mobileCard">
+      <div class="topline"><div><div class="title">${r[2]||'—'}</div><div class="mutedtext">${r[0]}｜${r[1]}</div></div><div class="amount">${money(r[3])}</div></div>
+      <div class="meta"><div><span>待確認</span>${r[4]}</div><div><span>負責人</span>${r[5]}</div></div>
+    </div>`).join(''):'<div class="mobileEmpty">目前沒有會計待辦</div>';
+  }
   renderWithdrawals();
 }
 function subscribe(){
@@ -413,6 +498,16 @@ function renderWithdrawals(){
   </tr>`).join(''):'<tr><td colspan="7" class="empty">目前沒有可提領項目</td></tr>';
   document.querySelectorAll('.withdrawCheck').forEach(c=>c.addEventListener('change',updateWithdrawSelectedTotal));
 
+  if($('withdrawCards')){
+    $('withdrawCards').innerHTML=eligible.length?eligible.map(x=>`<div class="mobileCard">
+      <div class="topline"><div><div class="title">${x.company||x.project||x.client||'平台收入'}</div><div class="mutedtext">${x.type}｜${x.date||'—'}</div></div><div class="amount">${money(x.gross)}</div></div>
+      <div class="checkrow"><input type="checkbox" class="withdrawCheckMobile" value="${x.id}" data-amount="${Number(x.gross||0)}"><span>加入本次提領</span></div>
+      <div class="actionsRow"><button class="btn edit" onclick="holdPlatform('${x.id}')">保留平台／製作費</button></div>
+    </div>`).join(''):'<div class="mobileEmpty">目前沒有可提領項目</div>';
+    document.querySelectorAll('.withdrawCheckMobile').forEach(c=>c.addEventListener('change',updateWithdrawSelectedTotal));
+  }
+
+
   $('withdrawHistoryBody').innerHTML=withdrawalHistory.length?withdrawalHistory.map(w=>`<tr>
     <td>${formatTimestamp(w.createdAt)}</td>
     <td>${w.kind||'—'}</td>
@@ -422,10 +517,19 @@ function renderWithdrawals(){
     <td>${w.createdBy||'—'}</td>
     <td>${w.note||'—'}</td>
   </tr>`).join(''):'<tr><td colspan="7" class="empty">尚無提領／保留紀錄</td></tr>';
+
+  if($('withdrawHistoryCards')){
+    $('withdrawHistoryCards').innerHTML=withdrawalHistory.length?withdrawalHistory.map(w=>`<div class="mobileCard">
+      <div class="topline"><div><div class="title">${w.kind||'—'}</div><div class="mutedtext">${formatTimestamp(w.createdAt)}</div></div><div class="amount">${money(w.amount)}</div></div>
+      <div class="meta"><div><span>項目</span>${w.summary||'—'}</div><div><span>帳戶</span>${w.accountLabel||'—'}</div><div><span>操作人</span>${w.createdBy||'—'}</div></div>
+      ${w.note?`<details><summary>備註</summary><div class="more">${w.note}</div></details>`:''}
+    </div>`).join(''):'<div class="mobileEmpty">尚無提領／保留紀錄</div>';
+  }
+
   updateWithdrawSelectedTotal();
 }
 function updateWithdrawSelectedTotal(){
-  const total=[...document.querySelectorAll('.withdrawCheck:checked')].reduce((s,c)=>s+Number(c.dataset.amount||0),0);
+  const total=[...document.querySelectorAll('.withdrawCheck:checked, .withdrawCheckMobile:checked')].reduce((s,c)=>s+Number(c.dataset.amount||0),0);
   if($('withdrawSelectedTotal')) $('withdrawSelectedTotal').textContent=money(total);
 }
 window.editAccount=function(id){
@@ -461,7 +565,7 @@ $('saveAccountBtn').addEventListener('click',async()=>{
   }catch(e){alert('帳戶儲存失敗：'+e.message)}
 });
 $('withdrawSelectedBtn').addEventListener('click',async()=>{
-  const ids=[...document.querySelectorAll('.withdrawCheck:checked')].map(c=>c.value);
+  const ids=[...new Set([...document.querySelectorAll('.withdrawCheck:checked, .withdrawCheckMobile:checked')].map(c=>c.value))];
   if(!ids.length)return alert('請先勾選要提領的項目');
   const account=accounts.find(a=>a.id===$('withdrawAccountSelect').value);
   if(!account)return alert('請選擇提領帳戶');
