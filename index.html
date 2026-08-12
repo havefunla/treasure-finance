@@ -535,20 +535,41 @@ body:has(.loginOverlay.show) .loginOverlay *{
   pointer-events:auto!important;
 }
 
+
+/* v12 robust mobile login */
+.loginStatus{
+  min-height:20px;
+  margin-top:10px;
+  text-align:center;
+  font-size:12px;
+  color:var(--muted);
+}
+#loginBtn:disabled{
+  opacity:.65!important;
+  cursor:wait!important;
+}
+#loginForm{
+  touch-action:auto!important;
+}
+#loginForm input{
+  -webkit-user-select:text!important;
+  user-select:text!important;
+}
+
 </style>
 </head>
 <body><header class="topNav"><div class="topBrand">無限寶藏財務總覽</div><nav class="topNavLinks"><button class="topNavBtn active" data-page="dashboardPage" type="button">總覽</button><button class="topNavBtn" data-page="incomePage" type="button">收入</button><button class="topNavBtn" data-page="expensePage" type="button">支出</button><button class="topNavBtn" data-page="confirmPage" type="button">財務確認</button><button class="topNavBtn" data-page="archivePage" type="button">廠商／個人</button><button class="topNavBtn" data-page="withdrawPage" type="button">提領</button></nav><div class="topNavActions"><button class="topQuickBtn" id="topAddExpense" type="button">＋支出</button><button class="topQuickBtn primary" id="topAddIncome" type="button">＋收入</button></div></header>
 <div class="loginOverlay show" id="loginOverlay">
-<div class="loginCard">
+<form class="loginCard" id="loginForm" novalidate>
 <h2>無限寶藏財務總覽</h2>
-<div class="sub" style="margin-bottom:14px">請用 Firebase Authentication 已建立的帳號登入。</div>
 <label>電子郵件</label>
-<input autocomplete="username" autocapitalize="none" spellcheck="false" id="loginEmail" type="email"/>
+<input autocomplete="username" autocapitalize="none" spellcheck="false" inputmode="email" id="loginEmail" type="email" required/>
 <label>密碼</label>
-<input autocomplete="current-password" id="loginPassword" type="password"/>
+<input autocomplete="current-password" id="loginPassword" type="password" required/>
 <div class="error" id="loginError"></div>
-<button class="btn primary" id="loginBtn" type="button" style="width:100%">登入</button>
-</div>
+<button class="btn primary" id="loginBtn" type="submit" style="width:100%">登入</button>
+<div id="loginStatus" class="loginStatus" aria-live="polite"></div>
+</form>
 </div>
 <div class="app noSidebar">
 <main id="top">
@@ -644,7 +665,7 @@ body:has(.loginOverlay.show) .loginOverlay *{
 <button id="logoutBtn"></button>
 <div id="userBox"></div>
 </div>
-<footer>無限寶藏財務總覽｜v11.9 登入互動修正版</footer>
+<footer>無限寶藏財務總覽｜v12 手機登入穩定版</footer>
 </main>
 </div>
 <div class="modal" id="archiveModal"><div class="dialog" style="width:min(760px,96vw)">
@@ -809,7 +830,7 @@ window.closeModal = function(id){
 
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp, query, orderBy, writeBatch } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -952,16 +973,55 @@ function subscribe(){
   },err=>{$('expenseBody').innerHTML=`<tr><td colspan="16" class="empty">讀取失敗：${err.message}</td></tr>`});
 }
 
-$('loginBtn').addEventListener('click',async()=>{
+const loginForm=$('loginForm');
+const loginBtn=$('loginBtn');
+
+async function doLogin(){
+  const email=$('loginEmail').value.trim();
+  const password=$('loginPassword').value;
   $('loginError').textContent='';
-  try{await signInWithEmailAndPassword(auth,$('loginEmail').value.trim(),$('loginPassword').value)}
-  catch(e){$('loginError').textContent='登入失敗：'+e.message}
+
+  if(!email || !password){
+    $('loginError').textContent='請輸入電子郵件和密碼';
+    return;
+  }
+
+  loginBtn.disabled=true;
+  loginBtn.textContent='登入中…';
+  $('loginStatus').textContent='正在連線 Firebase…';
+
+  try{
+    await setPersistence(auth,browserLocalPersistence);
+    await signInWithEmailAndPassword(auth,email,password);
+    $('loginStatus').textContent='登入成功，正在載入資料…';
+  }catch(e){
+    console.error('Firebase login error',e);
+    const code=e?.code||'';
+    let msg='登入失敗，請再試一次';
+    if(code==='auth/invalid-credential'||code==='auth/wrong-password'||code==='auth/user-not-found') msg='帳號或密碼錯誤';
+    else if(code==='auth/invalid-email') msg='電子郵件格式不正確';
+    else if(code==='auth/too-many-requests') msg='嘗試次數過多，請稍後再試';
+    else if(code==='auth/network-request-failed') msg='網路連線失敗，請確認網路後再試';
+    $('loginError').textContent=msg;
+    $('loginStatus').textContent='';
+  }finally{
+    loginBtn.disabled=false;
+    loginBtn.textContent='登入';
+  }
+}
+
+loginForm.addEventListener('submit',async e=>{
+  e.preventDefault();
+  e.stopPropagation();
+  await doLogin();
 });
-$('loginPassword').addEventListener('keydown',e=>{if(e.key==='Enter')$('loginBtn').click()});
 $('logoutBtn').addEventListener('click',()=>signOut(auth));
 onAuthStateChanged(auth,user=>{
   if(user){
     $('loginOverlay').classList.remove('show');
+    document.body.classList.remove('modalOpen');
+    if($('loginStatus')) $('loginStatus').textContent='';
+    if($('loginError')) $('loginError').textContent='';
     $('userBox').textContent='';
     subscribe();
   }else{
