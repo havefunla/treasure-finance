@@ -454,6 +454,25 @@ body.modalOpen{overflow:hidden!important}
   }
 }
 
+
+/* v11.8 iOS linked-period stability */
+@media(max-width:760px){
+  .linkedPeriod select,
+  #yearFilter,
+  #monthFilter{
+    font-size:16px!important;
+    height:44px!important;
+    line-height:1.2!important;
+    -webkit-appearance:none;
+    appearance:none;
+    background-color:var(--card)!important;
+  }
+  .linkedPeriod{
+    position:relative;
+    z-index:1;
+  }
+}
+
 </style>
 </head>
 <body><header class="topNav"><div class="topBrand">無限寶藏財務總覽</div><nav class="topNavLinks"><button class="topNavBtn active" data-page="dashboardPage" type="button">總覽</button><button class="topNavBtn" data-page="incomePage" type="button">收入</button><button class="topNavBtn" data-page="expensePage" type="button">支出</button><button class="topNavBtn" data-page="confirmPage" type="button">財務確認</button><button class="topNavBtn" data-page="archivePage" type="button">廠商／個人</button><button class="topNavBtn" data-page="withdrawPage" type="button">提領</button></nav><div class="topNavActions"><button class="topQuickBtn" id="topAddExpense" type="button">＋支出</button><button class="topQuickBtn primary" id="topAddIncome" type="button">＋收入</button></div></header>
@@ -563,7 +582,7 @@ body.modalOpen{overflow:hidden!important}
 <button id="logoutBtn"></button>
 <div id="userBox"></div>
 </div>
-<footer>無限寶藏財務總覽｜v11.7 年月聯動版</footer>
+<footer>無限寶藏財務總覽｜v11.8 手機年月聯動穩定版</footer>
 </main>
 </div>
 <div class="modal" id="archiveModal"><div class="dialog" style="width:min(760px,96vw)">
@@ -859,15 +878,15 @@ window.renderAll=function(){
       <div class="actionsRow"><button class="btn primary" onclick="toggleDataComplete('${r.collection}','${r.id}',true)">✓ 確認完成</button></div>
     </div>`).join(''):'<div class="mobileEmpty">全部確認完成 ✓</div>';
   }
-  renderWithdrawals();
+  window.renderWithdrawals();
 }
 function subscribe(){
   if(unsubI)unsubI(); if(unsubE)unsubE(); if(unsubA)unsubA(); if(unsubW)unsubW(); if(unsubAr)unsubAr();
   unsubI=onSnapshot(query(collection(db,'incomes'),orderBy('createdAt','desc')),snap=>{
-    incomes=snap.docs.map(d=>({id:d.id,...d.data()}));renderAll();
+    incomes=snap.docs.map(d=>({id:d.id,...d.data()}));window.renderAll();
   },err=>{$('incomeBody').innerHTML=`<tr><td colspan="16" class="empty">讀取失敗：${err.message}</td></tr>`});
   unsubE=onSnapshot(query(collection(db,'expenses'),orderBy('createdAt','desc')),snap=>{
-    expenses=snap.docs.map(d=>({id:d.id,...d.data()}));renderAll();
+    expenses=snap.docs.map(d=>({id:d.id,...d.data()}));window.renderAll();
   },err=>{$('expenseBody').innerHTML=`<tr><td colspan="16" class="empty">讀取失敗：${err.message}</td></tr>`});
 }
 
@@ -885,7 +904,7 @@ onAuthStateChanged(auth,user=>{
     subscribe();
   }else{
     if(unsubI)unsubI(); if(unsubE)unsubE(); if(unsubA)unsubA(); if(unsubW)unsubW(); if(unsubAr)unsubAr();
-    incomes=[];expenses=[];accounts=[];withdrawalHistory=[];archives=[];renderAll();renderWithdrawals();
+    incomes=[];expenses=[];accounts=[];withdrawalHistory=[];archives=[];window.renderAll();window.renderWithdrawals();
     $('userBox').textContent='';
     $('loginOverlay').classList.add('show');
   }
@@ -914,7 +933,7 @@ window.resetIncomeForm=function(){
   $('iPaid').value='未收款';$('iInvoice').value='待確認';$('iAccounting').value='待確認';
   $('iDate').value=new Date().toISOString().slice(0,10);
 }
-window.resetIncomeForm=resetIncomeForm;
+
 window.resetExpenseForm=function(){
   editingExpenseId=null;
   $('expenseModalTitle').textContent='新增支出';
@@ -925,7 +944,7 @@ window.resetExpenseForm=function(){
   $('ePaid').value='未付款';$('ePayer').value='公司';$('eVoucher').value='發票';$('eLabor').value='不適用';$('eInvoice').value='待取得';$('eAccounting').value='待處理';
   $('eDate').value=new Date().toISOString().slice(0,10);
 }
-window.resetExpenseForm=resetExpenseForm;
+
 window.editIncome=function(id){
   const x=incomes.find(v=>v.id===id); if(!x)return;
   editingIncomeId=id;
@@ -1044,22 +1063,29 @@ window.refreshLinkedPeriodUI=function(){
 };
 
 function syncPeriodControls(sourceYear,sourceMonth){
-  const y=sourceYear.value;
-  const m=sourceMonth.value;
+  if(!sourceYear || !sourceMonth) return;
+  const y=String(sourceYear.value || '2026');
+  const m=String(sourceMonth.value || 'all');
+
   ['yearFilter','incomeYearFilter','expenseYearFilter'].forEach(id=>{
-    const el=$(id); if(el) el.value=y;
+    const el=$(id);
+    if(el && el.value!==y) el.value=y;
   });
   ['monthFilter','incomeMonthFilter','expenseMonthFilter'].forEach(id=>{
-    const el=$(id); if(el) el.value=m;
+    const el=$(id);
+    if(el && el.value!==m) el.value=m;
   });
-  renderAll();
+
+  if(window.renderAll) window.renderAll();
 }
 
 function bindPeriodPair(yearId,monthId){
   const y=$(yearId), m=$(monthId);
-  if(!y||!m)return;
-  y.addEventListener('change',()=>syncPeriodControls(y,m));
-  m.addEventListener('change',()=>syncPeriodControls(y,m));
+  if(!y || !m) return;
+
+  const sync=()=>syncPeriodControls(y,m);
+  y.addEventListener('change',sync,{passive:true});
+  m.addEventListener('change',sync,{passive:true});
 }
 
 bindPeriodPair('yearFilter','monthFilter');
@@ -1075,7 +1101,7 @@ window.resetArchiveForm=function(){
   $('arType').value='公司'; ['arName','arTaxId','arBank','arAccountName','arAccountNumber','arExpenseType','arNote'].forEach(id=>$(id).value='');
   $('arVoucher').value='發票'; $('arActive').value='true';
 }
-window.resetArchiveForm=resetArchiveForm;
+
 window.renderArchive=function(){
   if(!$('archiveCards'))return;
   const t=$('archiveTypeFilter')?.value||'all', q=($('archiveSearch')?.value||'').trim().toLowerCase();
