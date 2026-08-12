@@ -305,6 +305,99 @@ body.modalOpen{overflow:hidden!important}
   }
 }
 
+
+/* v11.4 mobile visibility + date-field stability */
+*{box-sizing:border-box}
+
+@media(max-width:760px){
+  /* Page visibility */
+  .pageView{display:none!important;width:100%!important;min-width:0!important}
+  .pageView.active{display:block!important}
+
+  /* Mobile cards must be visible on income / expense pages */
+  #incomePage .desktopTable,
+  #expensePage .desktopTable{display:none!important}
+
+  #incomePage #incomeCards,
+  #expensePage #expenseCards{
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+  }
+
+  #incomePage .mobileCards,
+  #expensePage .mobileCards{
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+  }
+
+  .mobileCard{
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+  }
+
+  /* Tabs stay inside viewport */
+  .subTabs{
+    width:100%!important;
+    max-width:100%!important;
+    overflow-x:auto!important;
+    flex-wrap:nowrap!important;
+    -webkit-overflow-scrolling:touch;
+  }
+  .subTab{flex:0 0 auto!important}
+
+  /* Modal/form width fixes */
+  .modal{width:100vw!important;max-width:100vw!important}
+  .dialog{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+  }
+  .dialogbody{
+    width:100%!important;
+    min-width:0!important;
+    overflow-x:hidden!important;
+  }
+  .formgrid{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    width:100%!important;
+    min-width:0!important;
+  }
+  .formgrid>div,
+  .formgrid .full{
+    min-width:0!important;
+    width:100%!important;
+  }
+
+  /* iOS / Android date inputs otherwise create horizontal overflow */
+  input,
+  select,
+  textarea,
+  .field,
+  input[type="date"],
+  input[type="month"],
+  input[type="number"]{
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+  }
+  input[type="date"]{
+    -webkit-appearance:none;
+    appearance:none;
+    min-height:44px;
+  }
+}
+
+/* mobile card baseline */
+.mobileCards{width:100%;min-width:0}
+@media(min-width:761px){.mobileCards{display:none!important}}
+
 </style>
 </head>
 <body><header class="topNav"><div class="topBrand">無限寶藏財務總覽</div><nav class="topNavLinks"><button class="topNavBtn active" data-page="dashboardPage" type="button">總覽</button><button class="topNavBtn" data-page="incomePage" type="button">收入</button><button class="topNavBtn" data-page="expensePage" type="button">支出</button><button class="topNavBtn" data-page="confirmPage" type="button">財務確認</button><button class="topNavBtn" data-page="archivePage" type="button">廠商／個人</button><button class="topNavBtn" data-page="withdrawPage" type="button">提領</button></nav><div class="topNavActions"><button class="topQuickBtn" id="topAddExpense" type="button">＋支出</button><button class="topQuickBtn primary" id="topAddIncome" type="button">＋收入</button></div></header>
@@ -404,7 +497,7 @@ body.modalOpen{overflow:hidden!important}
 <button id="logoutBtn"></button>
 <div id="userBox"></div>
 </div>
-<footer>無限寶藏財務總覽｜v11.2 穩定修正版</footer>
+<footer>無限寶藏財務總覽｜v11.4 手機版穩定修正版</footer>
 </main>
 </div>
 <div class="modal" id="archiveModal"><div class="dialog" style="width:min(760px,96vw)">
@@ -601,7 +694,7 @@ function formatTimestamp(ts){
 
 function badge(t){let c='info';if(['已收款','已開立','已付款','已取得','資料齊全'].includes(t))c='ok';else if(['未收款','未付款','待開立','待取得','待確認','待資料','待申報'].includes(t))c='wait';else if(t==='無憑證')c='bad';return `<span class="badge ${c}">${t||'—'}</span>`}
 function filtered(arr){let y=$('yearFilter').value,m=$('monthFilter').value;return arr.filter(x=>{if(!x.date)return false;let d=new Date(x.date+'T00:00:00');return String(d.getFullYear())===y&&(m==='all'||d.getMonth()+1===Number(m))})}
-function renderAll(){
+window.renderAll=function(){
   const I=filtered(incomes),E=filtered(expenses);
   $('incomeBody').innerHTML=I.length?I.map(x=>`<tr><td>${x.date}</td><td>${x.type}</td><td>${x.client||'—'}</td><td>${x.company||x.project||'—'}</td><td>${x.taxId||'—'}</td><td class="money">${money(x.net)}</td><td class="money">${money(x.tax)}</td><td class="money">${money(x.gross)}</td><td>${badge(x.paid)}</td><td>${badge(x.invoice)}</td><td>${x.owner}</td><td>${x.accounting==='資料齊全'?`<button class="checkBtn done" onclick="toggleDataComplete('incomes','${x.id}',false)">✓</button>`:`<button class="checkBtn" onclick="toggleDataComplete('incomes','${x.id}',true)">✓</button>`}</td><td><button class="btn edit" onclick="editIncome('${x.id}')">編輯</button> <button class="btn edit" onclick="copyIncome('${x.id}')">複製</button> <button class="btn delete" onclick="removeIncome('${x.id}')">刪除</button></td></tr>`).join(''):`<tr><td colspan="15" class="empty">尚未登記收入</td></tr>`;
   $('expenseBody').innerHTML=E.length?E.map(x=>`<tr><td>${x.date}</td><td>${x.type}</td><td>${x.payee||'—'}</td><td>${x.party}</td><td>${x.voucher}</td><td>${x.project||'—'}</td><td class="money">${money(x.net)}</td><td class="money">${money(x.tax)}</td><td class="money">${money(x.gross)}</td><td>${badge(x.paid)}</td><td>${x.payer}</td><td>${badge(x.labor)}</td><td>${badge(x.invoice)}</td><td>${x.owner}</td><td>${x.accounting==='資料齊全'?`<button class="checkBtn done" onclick="toggleDataComplete('expenses','${x.id}',false)">✓</button>`:`<button class="checkBtn" onclick="toggleDataComplete('expenses','${x.id}',true)">✓</button>`}</td><td><button class="btn edit" onclick="editExpense('${x.id}')">編輯</button> <button class="btn edit" onclick="copyExpense('${x.id}')">複製</button> <button class="btn delete" onclick="removeExpense('${x.id}')">刪除</button></td></tr>`).join(''):`<tr><td colspan="18" class="empty">尚未登記支出</td></tr>`;
@@ -815,7 +908,7 @@ window.resetArchiveForm=function(){
   $('arVoucher').value='發票'; $('arActive').value='true';
 }
 window.resetArchiveForm=resetArchiveForm;
-function renderArchive(){
+window.renderArchive=function(){
   if(!$('archiveCards'))return;
   const t=$('archiveTypeFilter')?.value||'all', q=($('archiveSearch')?.value||'').trim().toLowerCase();
   const list=archives.filter(a=>(t==='all'||a.type===t)&&(!q||[a.name,a.taxId,a.bank,a.accountName,a.accountNumber].join(' ').toLowerCase().includes(q)));
@@ -861,7 +954,7 @@ $('eArchiveSelect').addEventListener('change',()=>{
   if([a.bank,a.accountName,a.accountNumber].filter(Boolean).length) $('eNote').value=`匯款資料：${[a.bank,a.accountName,a.accountNumber].filter(Boolean).join('｜')}`;
 });
 
-function renderWithdrawals(){
+window.renderWithdrawals=function(){
   if(!$('accountCards')) return;
   const activeAccounts=accounts.filter(a=>a.active!==false);
   $('accountCards').innerHTML=accounts.length?accounts.map(a=>`<div class="accountcard">
@@ -978,5 +1071,20 @@ $('exportBtn').addEventListener('click',()=>{
  let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='無限寶藏_會計資料.csv';a.click();
 });
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('.topNavBtn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      requestAnimationFrame(()=>{
+        if(window.renderAll) window.renderAll();
+        if(window.renderWithdrawals) window.renderWithdrawals();
+        if(window.renderArchive) window.renderArchive();
+      });
+    });
+  });
+});
+</script>
+
 </body>
 </html>
