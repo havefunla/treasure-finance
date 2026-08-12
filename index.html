@@ -426,137 +426,20 @@ body.modalOpen{overflow:hidden!important}
   font-weight:800;
 }
 
-
-.linkedPeriod{
-  display:flex;align-items:center;gap:8px;margin:0 0 14px;
-}
-.linkedPeriodLabel{font-size:12px;font-weight:850;color:var(--muted)}
-.linkedPeriod .field{min-width:110px}
-@media(max-width:760px){
-  .linkedPeriod{
-    display:grid!important;
-    grid-template-columns:auto minmax(0,1fr) minmax(0,1fr)!important;
-    width:100%!important;
-    gap:8px!important;
-  }
-  .linkedPeriod .field{
-    width:100%!important;min-width:0!important;
-    font-size:16px!important;height:44px!important;
-  }
-}
-
-
-/* v12.2 login hard reset — mobile-safe */
-#loginOverlay{
-  position:fixed!important;
-  inset:0!important;
-  z-index:2147483647!important;
-  display:none!important;
-  align-items:center!important;
-  justify-content:center!important;
-  padding:20px!important;
-  background:rgba(42,38,35,.50)!important;
-  overflow:auto!important;
-  pointer-events:auto!important;
-  touch-action:auto!important;
-}
-#loginOverlay.show{
-  display:flex!important;
-}
-#loginOverlay .loginCard{
-  position:relative!important;
-  z-index:1!important;
-  width:min(420px,calc(100vw - 32px))!important;
-  max-width:420px!important;
-  margin:auto!important;
-  padding:24px!important;
-  background:#FFFDF8!important;
-  border-radius:18px!important;
-  box-shadow:0 20px 60px rgba(42,38,35,.22)!important;
-  pointer-events:auto!important;
-  touch-action:auto!important;
-}
-#loginOverlay .loginCard *{
-  pointer-events:auto!important;
-}
-#loginOverlay label{
-  display:block!important;
-  margin:10px 0 6px!important;
-  font-size:13px!important;
-  font-weight:700!important;
-}
-#loginOverlay input{
-  position:relative!important;
-  display:block!important;
-  width:100%!important;
-  min-width:0!important;
-  max-width:100%!important;
-  height:48px!important;
-  padding:10px 12px!important;
-  margin:0 0 12px!important;
-  border:1px solid #D9CFC2!important;
-  border-radius:10px!important;
-  background:#fff!important;
-  color:#2A2623!important;
-  font-size:16px!important;
-  line-height:1.2!important;
-  opacity:1!important;
-  visibility:visible!important;
-  pointer-events:auto!important;
-  touch-action:manipulation!important;
-  -webkit-user-select:text!important;
-  user-select:text!important;
-  -webkit-appearance:none!important;
-  appearance:none!important;
-}
-#loginOverlay input:focus{
-  outline:2px solid #8A9A6E!important;
-  outline-offset:1px!important;
-}
-#loginOverlay #loginBtn{
-  min-height:46px!important;
-  margin-top:4px!important;
-  pointer-events:auto!important;
-  touch-action:manipulation!important;
-}
-@media(max-width:760px){
-  #loginOverlay{
-    padding:16px!important;
-    align-items:center!important;
-  }
-  #loginOverlay .loginCard{
-    width:100%!important;
-    max-width:420px!important;
-    padding:22px!important;
-  }
-}
-
-/* While login is visible, disable all background interception */
-body.loginLocked .topNav,
-body.loginLocked .app{
-  pointer-events:none!important;
-  user-select:none!important;
-}
-body.loginLocked #loginOverlay,
-body.loginLocked #loginOverlay *{
-  pointer-events:auto!important;
-  user-select:auto!important;
-}
-
 </style>
 </head>
 <body><header class="topNav"><div class="topBrand">無限寶藏財務總覽</div><nav class="topNavLinks"><button class="topNavBtn active" data-page="dashboardPage" type="button">總覽</button><button class="topNavBtn" data-page="incomePage" type="button">收入</button><button class="topNavBtn" data-page="expensePage" type="button">支出</button><button class="topNavBtn" data-page="confirmPage" type="button">財務確認</button><button class="topNavBtn" data-page="archivePage" type="button">廠商／個人</button><button class="topNavBtn" data-page="withdrawPage" type="button">提領</button></nav><div class="topNavActions"><button class="topQuickBtn" id="topAddExpense" type="button">＋支出</button><button class="topQuickBtn primary" id="topAddIncome" type="button">＋收入</button></div></header>
-
 <div class="loginOverlay show" id="loginOverlay">
-  <div class="loginCard">
-    <h2>無限寶藏財務總覽</h2>
-    <label for="loginEmail">電子郵件</label>
-    <input id="loginEmail" type="email" autocomplete="username" autocapitalize="none" spellcheck="false">
-    <label for="loginPassword">密碼</label>
-    <input id="loginPassword" type="password" autocomplete="current-password">
-    <div class="error" id="loginError"></div>
-    <button class="btn primary" id="loginBtn" type="button" style="width:100%">登入</button>
-  </div>
+<div class="loginCard">
+<h2>無限寶藏財務總覽</h2>
+<div class="sub" style="margin-bottom:14px">請用 Firebase Authentication 已建立的帳號登入。</div>
+<label>電子郵件</label>
+<input autocomplete="username" id="loginEmail" type="email"/>
+<label>密碼</label>
+<input autocomplete="current-password" id="loginPassword" type="password"/>
+<div class="error" id="loginError"></div>
+<button class="btn primary" id="loginBtn" style="width:100%">登入</button>
+</div>
 </div>
 <div class="app noSidebar">
 <main id="top">
@@ -577,38 +460,8 @@ body.loginLocked #loginOverlay *{
 </div><div class="card panel mapAccent" style="margin-top:14px">
 <div class="notice"><b>金額規則：</b>每筆交易同時保留未稅、稅額、含稅。收入表只追蹤專案、付款方、收款狀態與發票；付款方式、代墊人、勞報與收據集中在支出表管理。</div>
 </div></section>
-<section class="pageView" id="incomePage"><div class="pageHeader"><div><h1>收入管理</h1><p>管理應收、已收款與收入資料完整性。</p></div><button class="btn primary" onclick="resetIncomeForm();openModal('incomeModal')" type="button">＋新增收入</button></div>
-<div class="linkedPeriod">
-  <span class="linkedPeriodLabel">期間</span>
-  <select class="field" id="incomeYearFilter">
-    <option value="2026">2026</option>
-    <option value="2025">2025</option>
-    <option value="2024">2024</option>
-  </select>
-  <select class="field" id="incomeMonthFilter">
-    <option value="all">全年</option>
-    <option value="1">1 月</option><option value="2">2 月</option><option value="3">3 月</option>
-    <option value="4">4 月</option><option value="5">5 月</option><option value="6">6 月</option>
-    <option value="7">7 月</option><option value="8">8 月</option><option value="9">9 月</option>
-    <option value="10">10 月</option><option value="11">11 月</option><option value="12">12 月</option>
-  </select>
-</div><div class="subTabs" data-for="incomePage"><button class="subTab active" data-filter="all" type="button">全部</button><button class="subTab" data-filter="unpaid" type="button">待收款</button><button class="subTab" data-filter="paid" type="button">已收款</button><button class="subTab" data-filter="incomplete" type="button">待補資料</button></div><div class="sectionhead legacySectionHead" id="income"><h2>收入管理</h2><button class="btn primary" onclick="resetIncomeForm();openModal('incomeModal')">＋新增收入</button></div><div class="card tablebox desktopTable"><div class="scroll"><table><thead><tr><th>日期</th><th>類型</th><th>付款方／平台</th><th>專案名稱</th><th>統編</th><th>未稅</th><th>稅額</th><th>含稅</th><th>收款</th><th>發票</th><th>負責人</th><th>資料齊全</th><th>操作</th></tr></thead><tbody id="incomeBody"><tr><td class="empty" colspan="15">登入後讀取資料...</td></tr></tbody></table></div></div><div class="mobileCards" id="incomeCards"></div></section>
-<section class="pageView" id="expensePage"><div class="pageHeader"><div><h1>支出管理</h1><p>管理付款、代墊、憑證與勞報。</p></div><button class="btn primary" onclick="resetExpenseForm();openModal('expenseModal')" type="button">＋新增支出</button></div>
-<div class="linkedPeriod">
-  <span class="linkedPeriodLabel">期間</span>
-  <select class="field" id="expenseYearFilter">
-    <option value="2026">2026</option>
-    <option value="2025">2025</option>
-    <option value="2024">2024</option>
-  </select>
-  <select class="field" id="expenseMonthFilter">
-    <option value="all">全年</option>
-    <option value="1">1 月</option><option value="2">2 月</option><option value="3">3 月</option>
-    <option value="4">4 月</option><option value="5">5 月</option><option value="6">6 月</option>
-    <option value="7">7 月</option><option value="8">8 月</option><option value="9">9 月</option>
-    <option value="10">10 月</option><option value="11">11 月</option><option value="12">12 月</option>
-  </select>
-</div><div class="subTabs" data-for="expensePage"><button class="subTab active" data-filter="all" type="button">全部</button><button class="subTab" data-filter="unpaid" type="button">待付款</button><button class="subTab" data-filter="paid" type="button">已付款</button><button class="subTab" data-filter="advance" type="button">成員代墊</button><button class="subTab" data-filter="incomplete" type="button">待補資料</button></div><div class="sectionhead legacySectionHead" id="expense"><h2>支出管理</h2><button class="btn primary" onclick="resetExpenseForm();openModal('expenseModal')">＋新增支出</button></div><div class="card tablebox desktopTable"><div class="scroll"><table><thead><tr><th>日期</th><th>類型</th><th>收款人／廠商</th><th>對象</th><th>憑證</th><th>專案</th><th>未稅</th><th>稅額</th><th>含稅</th><th>付款</th><th>付款人／代墊</th><th>勞報</th><th>發票／收據</th><th>負責人</th><th>資料齊全</th><th>操作</th></tr></thead><tbody id="expenseBody"><tr><td class="empty" colspan="18">登入後讀取資料...</td></tr></tbody></table></div></div><div class="mobileCards" id="expenseCards"></div></section>
+<section class="pageView" id="incomePage"><div class="pageHeader"><div><h1>收入管理</h1><p>管理應收、已收款與收入資料完整性。</p></div><button class="btn primary" onclick="resetIncomeForm();openModal('incomeModal')" type="button">＋新增收入</button></div><div class="subTabs" data-for="incomePage"><button class="subTab active" data-filter="all" type="button">全部</button><button class="subTab" data-filter="unpaid" type="button">待收款</button><button class="subTab" data-filter="paid" type="button">已收款</button><button class="subTab" data-filter="incomplete" type="button">待補資料</button></div><div class="sectionhead legacySectionHead" id="income"><h2>收入管理</h2><button class="btn primary" onclick="resetIncomeForm();openModal('incomeModal')">＋新增收入</button></div><div class="card tablebox desktopTable"><div class="scroll"><table><thead><tr><th>日期</th><th>類型</th><th>付款方／平台</th><th>專案名稱</th><th>統編</th><th>未稅</th><th>稅額</th><th>含稅</th><th>收款</th><th>發票</th><th>負責人</th><th>資料齊全</th><th>操作</th></tr></thead><tbody id="incomeBody"><tr><td class="empty" colspan="15">登入後讀取資料...</td></tr></tbody></table></div></div><div class="mobileCards" id="incomeCards"></div></section>
+<section class="pageView" id="expensePage"><div class="pageHeader"><div><h1>支出管理</h1><p>管理付款、代墊、憑證與勞報。</p></div><button class="btn primary" onclick="resetExpenseForm();openModal('expenseModal')" type="button">＋新增支出</button></div><div class="subTabs" data-for="expensePage"><button class="subTab active" data-filter="all" type="button">全部</button><button class="subTab" data-filter="unpaid" type="button">待付款</button><button class="subTab" data-filter="paid" type="button">已付款</button><button class="subTab" data-filter="advance" type="button">成員代墊</button><button class="subTab" data-filter="incomplete" type="button">待補資料</button></div><div class="sectionhead legacySectionHead" id="expense"><h2>支出管理</h2><button class="btn primary" onclick="resetExpenseForm();openModal('expenseModal')">＋新增支出</button></div><div class="card tablebox desktopTable"><div class="scroll"><table><thead><tr><th>日期</th><th>類型</th><th>收款人／廠商</th><th>對象</th><th>憑證</th><th>專案</th><th>未稅</th><th>稅額</th><th>含稅</th><th>付款</th><th>付款人／代墊</th><th>勞報</th><th>發票／收據</th><th>負責人</th><th>資料齊全</th><th>操作</th></tr></thead><tbody id="expenseBody"><tr><td class="empty" colspan="18">登入後讀取資料...</td></tr></tbody></table></div></div><div class="mobileCards" id="expenseCards"></div></section>
 <section class="pageView" id="archivePage"><div class="pageHeader"><div><h1>廠商／個人資料庫</h1><p>常用付款對象集中管理，新增支出時可直接帶入。</p></div></div><div class="sectionhead legacySectionHead" id="archive"><h2>廠商／個人資料庫</h2><button class="btn primary" onclick="resetArchiveForm();openModal('archiveModal')">＋新增歸檔</button></div><div class="card panel">
 <div class="notice">常用付款對象集中在這裡。新增支出時可直接選取，不用重打名稱、統編、銀行、戶名、帳號與常用憑證。</div>
 <div class="filters" style="margin-top:12px">
@@ -656,7 +509,7 @@ body.loginLocked #loginOverlay *{
 <button id="logoutBtn"></button>
 <div id="userBox"></div>
 </div>
-<footer>無限寶藏財務總覽｜v12.2 登入輸入修正版</footer>
+<footer>無限寶藏財務總覽｜v11.6 分類對應修正版</footer>
 </main>
 </div>
 <div class="modal" id="archiveModal"><div class="dialog" style="width:min(760px,96vw)">
@@ -1130,39 +983,6 @@ $('saveExpenseBtn').addEventListener('click',async()=>{
 
 $('yearFilter').addEventListener('change',renderAll);$('monthFilter').addEventListener('change',renderAll);
 
-$('yearFilter').addEventListener('change',()=>{
-  if($('incomeYearFilter')) $('incomeYearFilter').value=$('yearFilter').value;
-  if($('expenseYearFilter')) $('expenseYearFilter').value=$('yearFilter').value;
-});
-$('monthFilter').addEventListener('change',()=>{
-  if($('incomeMonthFilter')) $('incomeMonthFilter').value=$('monthFilter').value;
-  if($('expenseMonthFilter')) $('expenseMonthFilter').value=$('monthFilter').value;
-});
-
-function syncFromLinked(yearId,monthId){
-  const y=$(yearId),m=$(monthId);
-  if(!y||!m)return;
-  const apply=()=>{
-    $('yearFilter').value=y.value;
-    $('monthFilter').value=m.value;
-    if($('incomeYearFilter')) $('incomeYearFilter').value=y.value;
-    if($('expenseYearFilter')) $('expenseYearFilter').value=y.value;
-    if($('incomeMonthFilter')) $('incomeMonthFilter').value=m.value;
-    if($('expenseMonthFilter')) $('expenseMonthFilter').value=m.value;
-    renderAll();
-  };
-  y.addEventListener('change',apply);
-  m.addEventListener('change',apply);
-}
-syncFromLinked('incomeYearFilter','incomeMonthFilter');
-syncFromLinked('expenseYearFilter','expenseMonthFilter');
-
-if($('incomeYearFilter')) $('incomeYearFilter').value=$('yearFilter').value;
-if($('expenseYearFilter')) $('expenseYearFilter').value=$('yearFilter').value;
-if($('incomeMonthFilter')) $('incomeMonthFilter').value=$('monthFilter').value;
-if($('expenseMonthFilter')) $('expenseMonthFilter').value=$('monthFilter').value;
-
-
 
 
 window.resetArchiveForm=function(){
@@ -1347,30 +1167,5 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
 });
 </script>
-
-<script>
-(function(){
-  function syncLoginLock(){
-    const overlay=document.getElementById('loginOverlay');
-    document.body.classList.toggle('loginLocked', !!overlay && overlay.classList.contains('show'));
-  }
-  document.addEventListener('DOMContentLoaded',()=>{
-    syncLoginLock();
-    const overlay=document.getElementById('loginOverlay');
-    if(overlay){
-      new MutationObserver(syncLoginLock).observe(overlay,{attributes:true,attributeFilter:['class']});
-    }
-    const email=document.getElementById('loginEmail');
-    const password=document.getElementById('loginPassword');
-    [email,password].forEach(el=>{
-      if(!el)return;
-      el.removeAttribute('disabled');
-      el.removeAttribute('readonly');
-      el.tabIndex=0;
-    });
-  });
-})();
-</script>
-
 </body>
 </html>
