@@ -445,20 +445,118 @@ body.modalOpen{overflow:hidden!important}
   }
 }
 
+
+/* v12.2 login hard reset — mobile-safe */
+#loginOverlay{
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147483647!important;
+  display:none!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:20px!important;
+  background:rgba(42,38,35,.50)!important;
+  overflow:auto!important;
+  pointer-events:auto!important;
+  touch-action:auto!important;
+}
+#loginOverlay.show{
+  display:flex!important;
+}
+#loginOverlay .loginCard{
+  position:relative!important;
+  z-index:1!important;
+  width:min(420px,calc(100vw - 32px))!important;
+  max-width:420px!important;
+  margin:auto!important;
+  padding:24px!important;
+  background:#FFFDF8!important;
+  border-radius:18px!important;
+  box-shadow:0 20px 60px rgba(42,38,35,.22)!important;
+  pointer-events:auto!important;
+  touch-action:auto!important;
+}
+#loginOverlay .loginCard *{
+  pointer-events:auto!important;
+}
+#loginOverlay label{
+  display:block!important;
+  margin:10px 0 6px!important;
+  font-size:13px!important;
+  font-weight:700!important;
+}
+#loginOverlay input{
+  position:relative!important;
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  height:48px!important;
+  padding:10px 12px!important;
+  margin:0 0 12px!important;
+  border:1px solid #D9CFC2!important;
+  border-radius:10px!important;
+  background:#fff!important;
+  color:#2A2623!important;
+  font-size:16px!important;
+  line-height:1.2!important;
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+  -webkit-user-select:text!important;
+  user-select:text!important;
+  -webkit-appearance:none!important;
+  appearance:none!important;
+}
+#loginOverlay input:focus{
+  outline:2px solid #8A9A6E!important;
+  outline-offset:1px!important;
+}
+#loginOverlay #loginBtn{
+  min-height:46px!important;
+  margin-top:4px!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+}
+@media(max-width:760px){
+  #loginOverlay{
+    padding:16px!important;
+    align-items:center!important;
+  }
+  #loginOverlay .loginCard{
+    width:100%!important;
+    max-width:420px!important;
+    padding:22px!important;
+  }
+}
+
+/* While login is visible, disable all background interception */
+body.loginLocked .topNav,
+body.loginLocked .app{
+  pointer-events:none!important;
+  user-select:none!important;
+}
+body.loginLocked #loginOverlay,
+body.loginLocked #loginOverlay *{
+  pointer-events:auto!important;
+  user-select:auto!important;
+}
+
 </style>
 </head>
 <body><header class="topNav"><div class="topBrand">無限寶藏財務總覽</div><nav class="topNavLinks"><button class="topNavBtn active" data-page="dashboardPage" type="button">總覽</button><button class="topNavBtn" data-page="incomePage" type="button">收入</button><button class="topNavBtn" data-page="expensePage" type="button">支出</button><button class="topNavBtn" data-page="confirmPage" type="button">財務確認</button><button class="topNavBtn" data-page="archivePage" type="button">廠商／個人</button><button class="topNavBtn" data-page="withdrawPage" type="button">提領</button></nav><div class="topNavActions"><button class="topQuickBtn" id="topAddExpense" type="button">＋支出</button><button class="topQuickBtn primary" id="topAddIncome" type="button">＋收入</button></div></header>
+
 <div class="loginOverlay show" id="loginOverlay">
-<div class="loginCard">
-<h2>無限寶藏財務總覽</h2>
-<div class="sub" style="margin-bottom:14px">請用 Firebase Authentication 已建立的帳號登入。</div>
-<label>電子郵件</label>
-<input autocomplete="username" id="loginEmail" type="email"/>
-<label>密碼</label>
-<input autocomplete="current-password" id="loginPassword" type="password"/>
-<div class="error" id="loginError"></div>
-<button class="btn primary" id="loginBtn" style="width:100%">登入</button>
-</div>
+  <div class="loginCard">
+    <h2>無限寶藏財務總覽</h2>
+    <label for="loginEmail">電子郵件</label>
+    <input id="loginEmail" type="email" autocomplete="username" autocapitalize="none" spellcheck="false">
+    <label for="loginPassword">密碼</label>
+    <input id="loginPassword" type="password" autocomplete="current-password">
+    <div class="error" id="loginError"></div>
+    <button class="btn primary" id="loginBtn" type="button" style="width:100%">登入</button>
+  </div>
 </div>
 <div class="app noSidebar">
 <main id="top">
@@ -558,7 +656,7 @@ body.modalOpen{overflow:hidden!important}
 <button id="logoutBtn"></button>
 <div id="userBox"></div>
 </div>
-<footer>無限寶藏財務總覽｜v12.1 穩定重建版</footer>
+<footer>無限寶藏財務總覽｜v12.2 登入輸入修正版</footer>
 </main>
 </div>
 <div class="modal" id="archiveModal"><div class="dialog" style="width:min(760px,96vw)">
@@ -1249,5 +1347,30 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
 });
 </script>
+
+<script>
+(function(){
+  function syncLoginLock(){
+    const overlay=document.getElementById('loginOverlay');
+    document.body.classList.toggle('loginLocked', !!overlay && overlay.classList.contains('show'));
+  }
+  document.addEventListener('DOMContentLoaded',()=>{
+    syncLoginLock();
+    const overlay=document.getElementById('loginOverlay');
+    if(overlay){
+      new MutationObserver(syncLoginLock).observe(overlay,{attributes:true,attributeFilter:['class']});
+    }
+    const email=document.getElementById('loginEmail');
+    const password=document.getElementById('loginPassword');
+    [email,password].forEach(el=>{
+      if(!el)return;
+      el.removeAttribute('disabled');
+      el.removeAttribute('readonly');
+      el.tabIndex=0;
+    });
+  });
+})();
+</script>
+
 </body>
 </html>
