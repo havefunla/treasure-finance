@@ -473,6 +473,68 @@ body.modalOpen{overflow:hidden!important}
   }
 }
 
+
+/* v11.9 login interaction fix */
+.loginOverlay{
+  z-index:12000!important;
+  pointer-events:none;
+}
+.loginOverlay.show{
+  display:flex!important;
+  pointer-events:auto!important;
+}
+.loginCard{
+  position:relative!important;
+  z-index:12001!important;
+  pointer-events:auto!important;
+  width:min(420px,calc(100vw - 32px))!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+.loginCard input,
+#loginEmail,
+#loginPassword{
+  position:relative!important;
+  z-index:12002!important;
+  pointer-events:auto!important;
+  touch-action:manipulation;
+  -webkit-user-select:text!important;
+  user-select:text!important;
+  opacity:1!important;
+}
+#loginBtn{
+  position:relative!important;
+  z-index:12002!important;
+  pointer-events:auto!important;
+}
+@media(max-width:760px){
+  .loginOverlay{
+    align-items:center!important;
+    justify-content:center!important;
+    padding:16px!important;
+  }
+  .loginCard{
+    width:100%!important;
+    max-width:420px!important;
+    padding:22px!important;
+  }
+  #loginEmail,
+  #loginPassword{
+    font-size:16px!important;
+    min-height:46px!important;
+    width:100%!important;
+  }
+}
+/* When login is visible, keep the app/nav from intercepting taps. */
+body:has(.loginOverlay.show) .topNav,
+body:has(.loginOverlay.show) .app{
+  pointer-events:none!important;
+}
+body:has(.loginOverlay.show) .loginOverlay,
+body:has(.loginOverlay.show) .loginOverlay *{
+  pointer-events:auto!important;
+}
+
 </style>
 </head>
 <body><header class="topNav"><div class="topBrand">無限寶藏財務總覽</div><nav class="topNavLinks"><button class="topNavBtn active" data-page="dashboardPage" type="button">總覽</button><button class="topNavBtn" data-page="incomePage" type="button">收入</button><button class="topNavBtn" data-page="expensePage" type="button">支出</button><button class="topNavBtn" data-page="confirmPage" type="button">財務確認</button><button class="topNavBtn" data-page="archivePage" type="button">廠商／個人</button><button class="topNavBtn" data-page="withdrawPage" type="button">提領</button></nav><div class="topNavActions"><button class="topQuickBtn" id="topAddExpense" type="button">＋支出</button><button class="topQuickBtn primary" id="topAddIncome" type="button">＋收入</button></div></header>
@@ -481,11 +543,11 @@ body.modalOpen{overflow:hidden!important}
 <h2>無限寶藏財務總覽</h2>
 <div class="sub" style="margin-bottom:14px">請用 Firebase Authentication 已建立的帳號登入。</div>
 <label>電子郵件</label>
-<input autocomplete="username" id="loginEmail" type="email"/>
+<input autocomplete="username" autocapitalize="none" spellcheck="false" id="loginEmail" type="email"/>
 <label>密碼</label>
 <input autocomplete="current-password" id="loginPassword" type="password"/>
 <div class="error" id="loginError"></div>
-<button class="btn primary" id="loginBtn" style="width:100%">登入</button>
+<button class="btn primary" id="loginBtn" type="button" style="width:100%">登入</button>
 </div>
 </div>
 <div class="app noSidebar">
@@ -582,7 +644,7 @@ body.modalOpen{overflow:hidden!important}
 <button id="logoutBtn"></button>
 <div id="userBox"></div>
 </div>
-<footer>無限寶藏財務總覽｜v11.8 手機年月聯動穩定版</footer>
+<footer>無限寶藏財務總覽｜v11.9 登入互動修正版</footer>
 </main>
 </div>
 <div class="modal" id="archiveModal"><div class="dialog" style="width:min(760px,96vw)">
