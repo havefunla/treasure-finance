@@ -398,6 +398,14 @@ body.modalOpen{overflow:hidden!important}
 .mobileCards{width:100%;min-width:0}
 @media(min-width:761px){.mobileCards{display:none!important}}
 
+
+@media(max-width:760px){
+  #incomeCards,#expenseCards{display:block!important;margin-top:10px}
+  #incomeCards:empty:before,#expenseCards:empty:before{content:"資料載入中…";display:block;padding:18px;text-align:center;color:var(--muted);background:var(--card);border:1px solid var(--line);border-radius:14px}
+  .dialog input[type="date"]{width:100%!important;max-width:100%!important;min-width:0!important;font-size:16px!important;box-sizing:border-box!important}
+  .dialogbody,.formgrid,.formgrid>div{max-width:100%!important;min-width:0!important}
+}
+
 </style>
 </head>
 <body><header class="topNav"><div class="topBrand">無限寶藏財務總覽</div><nav class="topNavLinks"><button class="topNavBtn active" data-page="dashboardPage" type="button">總覽</button><button class="topNavBtn" data-page="incomePage" type="button">收入</button><button class="topNavBtn" data-page="expensePage" type="button">支出</button><button class="topNavBtn" data-page="confirmPage" type="button">財務確認</button><button class="topNavBtn" data-page="archivePage" type="button">廠商／個人</button><button class="topNavBtn" data-page="withdrawPage" type="button">提領</button></nav><div class="topNavActions"><button class="topQuickBtn" id="topAddExpense" type="button">＋支出</button><button class="topQuickBtn primary" id="topAddIncome" type="button">＋收入</button></div></header>
@@ -414,13 +422,11 @@ body.modalOpen{overflow:hidden!important}
 </div>
 </div>
 <div class="app noSidebar">
-
 <main id="top">
 <section class="pageView active" id="dashboardPage"><div class="dashboardHero">
 <div>
 <h1>無限寶藏財務總覽 ✦</h1>
 </div>
-
 </div><div class="filters">
 <select class="field" id="yearFilter"><option>2026</option><option>2025</option><option>2024</option></select>
 <select class="field" id="monthFilter"><option value="all">全年</option><option value="1">1 月</option><option value="2">2 月</option><option value="3">3 月</option><option value="4">4 月</option><option value="5">5 月</option><option value="6">6 月</option><option value="7">7 月</option><option value="8">8 月</option><option value="9">9 月</option><option value="10">10 月</option><option value="11">11 月</option><option value="12">12 月</option></select>
@@ -434,14 +440,8 @@ body.modalOpen{overflow:hidden!important}
 </div><div class="card panel mapAccent" style="margin-top:14px">
 <div class="notice"><b>金額規則：</b>每筆交易同時保留未稅、稅額、含稅。收入表只追蹤專案、付款方、收款狀態與發票；付款方式、代墊人、勞報與收據集中在支出表管理。</div>
 </div></section>
-
-
-
 <section class="pageView" id="incomePage"><div class="pageHeader"><div><h1>收入管理</h1><p>管理應收、已收款與收入資料完整性。</p></div><button class="btn primary" onclick="resetIncomeForm();openModal('incomeModal')" type="button">＋新增收入</button></div><div class="subTabs" data-for="incomePage"><button class="subTab active" data-filter="all" type="button">全部</button><button class="subTab" data-filter="unpaid" type="button">待收款</button><button class="subTab" data-filter="paid" type="button">已收款</button><button class="subTab" data-filter="incomplete" type="button">待補資料</button></div><div class="sectionhead legacySectionHead" id="income"><h2>收入管理</h2><button class="btn primary" onclick="resetIncomeForm();openModal('incomeModal')">＋新增收入</button></div><div class="card tablebox desktopTable"><div class="scroll"><table><thead><tr><th>日期</th><th>類型</th><th>付款方／平台</th><th>專案名稱</th><th>統編</th><th>未稅</th><th>稅額</th><th>含稅</th><th>收款</th><th>發票</th><th>負責人</th><th>資料齊全</th><th>操作</th></tr></thead><tbody id="incomeBody"><tr><td class="empty" colspan="15">登入後讀取資料...</td></tr></tbody></table></div></div><div class="mobileCards" id="incomeCards"></div></section>
-
-
-<section class="pageView" id="expensePage"><div class="pageHeader"><div><h1>支出管理</h1><p>管理付款、代墊、憑證與勞報。</p></div><button class="btn primary" onclick="resetExpenseForm();openModal('expenseModal')" type="button">＋新增支出</button></div><div class="subTabs" data-for="expensePage"><button class="subTab active" data-filter="all" type="button">全部</button><button class="subTab" data-filter="unpaid" type="button">待付款</button><button class="subTab" data-filter="paid" type="button">已付款</button><button class="subTab" data-filter="advance" type="button">成員代墊</button><button class="subTab" data-filter="incomplete" type="button">待補資料</button></div><div class="sectionhead legacySectionHead" id="expense"><h2>支出管理</h2><button class="btn primary" onclick="resetExpenseForm();openModal('expenseModal')">＋新增支出</button></div><div class="card tablebox desktopTable"><div class="scroll"><table><thead><tr><th>日期</th><th>類型</th><th>收款人／廠商</th><th>對象</th><th>憑證</th><th>專案</th><th>未稅</th><th>稅額</th><th>含稅</th><th>付款</th><th>付款人／代墊</th><th>勞報</th><th>發票／收據</th><th>負責人</th><th>資料齊全</th><th>操作</th></tr></thead><tbody id="expenseBody"><tr><td class="empty" colspan="18">登入後讀取資料...</td></tr></tbody></table></div></div></section>
-
+<section class="pageView" id="expensePage"><div class="pageHeader"><div><h1>支出管理</h1><p>管理付款、代墊、憑證與勞報。</p></div><button class="btn primary" onclick="resetExpenseForm();openModal('expenseModal')" type="button">＋新增支出</button></div><div class="subTabs" data-for="expensePage"><button class="subTab active" data-filter="all" type="button">全部</button><button class="subTab" data-filter="unpaid" type="button">待付款</button><button class="subTab" data-filter="paid" type="button">已付款</button><button class="subTab" data-filter="advance" type="button">成員代墊</button><button class="subTab" data-filter="incomplete" type="button">待補資料</button></div><div class="sectionhead legacySectionHead" id="expense"><h2>支出管理</h2><button class="btn primary" onclick="resetExpenseForm();openModal('expenseModal')">＋新增支出</button></div><div class="card tablebox desktopTable"><div class="scroll"><table><thead><tr><th>日期</th><th>類型</th><th>收款人／廠商</th><th>對象</th><th>憑證</th><th>專案</th><th>未稅</th><th>稅額</th><th>含稅</th><th>付款</th><th>付款人／代墊</th><th>勞報</th><th>發票／收據</th><th>負責人</th><th>資料齊全</th><th>操作</th></tr></thead><tbody id="expenseBody"><tr><td class="empty" colspan="18">登入後讀取資料...</td></tr></tbody></table></div></div><div class="mobileCards" id="expenseCards"></div></section>
 <section class="pageView" id="archivePage"><div class="pageHeader"><div><h1>廠商／個人資料庫</h1><p>常用付款對象集中管理，新增支出時可直接帶入。</p></div></div><div class="sectionhead legacySectionHead" id="archive"><h2>廠商／個人資料庫</h2><button class="btn primary" onclick="resetArchiveForm();openModal('archiveModal')">＋新增歸檔</button></div><div class="card panel">
 <div class="notice">常用付款對象集中在這裡。新增支出時可直接選取，不用重打名稱、統編、銀行、戶名、帳號與常用憑證。</div>
 <div class="filters" style="margin-top:12px">
@@ -450,7 +450,6 @@ body.modalOpen{overflow:hidden!important}
 </div>
 <div class="accountcards" id="archiveCards"></div>
 </div></section>
-
 <section class="pageView" id="withdrawPage"><div class="pageHeader"><div><h1>資金提領</h1><p>管理可提領項目、收款帳戶，以及提領／保留紀錄。</p></div></div><div class="sectionhead legacySectionHead" id="withdrawals"><h2>資金提領</h2><div class="actions"><button class="btn" onclick="openModal('accountModal')">＋新增帳戶</button></div></div><div class="grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
 <div class="card panel">
 <h3 style="margin-top:0">帳戶資料庫</h3>
@@ -484,20 +483,13 @@ body.modalOpen{overflow:hidden!important}
 <thead><tr><th>日期</th><th>類型</th><th>平台／項目</th><th>金額</th><th>帳戶</th><th>操作人</th><th>備註</th></tr></thead>
 <tbody id="withdrawHistoryBody"></tbody>
 </table></div><div class="mobileCards" id="withdrawHistoryCards"></div></div></section>
-
-
-
-
-
 <section class="pageView" id="confirmPage"><div class="pageHeader"><div><h1>財務確認</h1><p>只處理尚未完成的項目，確認後即從待辦移除。</p></div></div><div class="sectionhead legacySectionHead" id="accounting"><h2>財務確認</h2><div class="sub">資料齊全後打勾，待辦就會自動消失。</div></div><div class="card tablebox desktopTable"><div class="scroll"><table><thead><tr><th>來源</th><th>日期</th><th>對象</th><th>金額</th><th>待確認</th><th>負責人</th><th>完成</th></tr></thead><tbody id="accountingBody"><tr><td class="empty" colspan="6">目前沒有會計待辦</td></tr></tbody></table></div></div><div class="mobileCards" id="accountingCards"></div></section>
-
-
 <div style="display:none">
 <button id="exportBtn"></button>
 <button id="logoutBtn"></button>
 <div id="userBox"></div>
 </div>
-<footer>無限寶藏財務總覽｜v11.4 手機版穩定修正版</footer>
+<footer>無限寶藏財務總覽｜v11.5 手機資料渲染修正版</footer>
 </main>
 </div>
 <div class="modal" id="archiveModal"><div class="dialog" style="width:min(760px,96vw)">
@@ -570,9 +562,6 @@ body.modalOpen{overflow:hidden!important}
 <div class="dialogfoot"><button class="btn" onclick="closeModal('expenseModal')">取消</button><button class="btn primary" id="saveExpenseBtn">儲存</button></div>
 </div></div>
 <script>
-
-
-
 </script>
 <script>
 (function(){
@@ -706,6 +695,34 @@ window.renderAll=function(){
       paidE=E.filter(x=>x.paid==='已付款').reduce((s,x)=>s+Number(x.gross||0),0),
       bank=I.filter(x=>x.paid==='已收款').reduce((s,x)=>s+Number(x.gross||0),0);
   $('kIncome').textContent=money(inc);$('kReceived').textContent=money(rec);$('kUnwithdrawn').textContent=unw+' 筆';$('kReceivable').textContent=money(ar);$('kPayable').textContent=money(ap);$('kNet').textContent=money(bank-paidE);
+
+  if($('incomeCards')){
+    $('incomeCards').innerHTML=I.length?I.map(x=>`<div class="mobileCard">
+      <div class="topline"><div><div class="title">${x.company||x.project||x.client||'未命名收入'}</div><div class="mutedtext">${x.type||'—'}｜${x.date||'—'}</div></div><div class="amount">${money(x.gross)}</div></div>
+      <div class="meta">
+        <div><span>付款方／平台</span>${x.client||'—'}</div>
+        <div><span>收款</span>${badge(x.paid)}</div>
+        <div><span>發票</span>${badge(x.invoice)}</div>
+        <div><span>負責人</span>${x.owner||'—'}</div>
+      </div>
+      <details><summary>更多資訊</summary><div class="more">未稅：${money(x.net)}<br>稅額：${money(x.tax)}<br>資料齊全：${x.accounting==='資料齊全'?'✓ 已確認':'未確認'}</div></details>
+      <div class="actionsRow"><button class="btn edit" onclick="editIncome('${x.id}')">編輯</button><button class="btn edit" onclick="copyIncome('${x.id}')">複製</button><button class="btn delete" onclick="removeIncome('${x.id}')">刪除</button></div>
+    </div>`).join(''):'<div class="mobileEmpty">尚未登記收入</div>';
+  }
+  if($('expenseCards')){
+    $('expenseCards').innerHTML=E.length?E.map(x=>`<div class="mobileCard">
+      <div class="topline"><div><div class="title">${x.payee||'未命名支出'}</div><div class="mutedtext">${x.type||'—'}｜${x.date||'—'}</div></div><div class="amount">${money(x.gross)}</div></div>
+      <div class="meta">
+        <div><span>付款</span>${badge(x.paid)}</div>
+        <div><span>憑證</span>${x.voucher||'—'}</div>
+        <div><span>付款人／代墊</span>${x.payer||'—'}</div>
+        <div><span>負責人</span>${x.owner||'—'}</div>
+      </div>
+      <details><summary>更多資訊</summary><div class="more">專案：${x.project||'—'}<br>未稅：${money(x.net)}<br>稅額：${money(x.tax)}<br>資料齊全：${x.accounting==='資料齊全'?'✓ 已確認':'未確認'}</div></details>
+      <div class="actionsRow"><button class="btn edit" onclick="editExpense('${x.id}')">編輯</button><button class="btn edit" onclick="copyExpense('${x.id}')">複製</button><button class="btn delete" onclick="removeExpense('${x.id}')">刪除</button></div>
+    </div>`).join(''):'<div class="mobileEmpty">尚未登記支出</div>';
+  }
+
 
   let todos=[];
   I.filter(x=>x.accounting!=='資料齊全').forEach(x=>todos.push({source:'收入',collection:'incomes',id:x.id,date:x.date,name:x.client||x.company||'—',amount:x.gross,issue:'資料待確認',owner:x.owner}));
@@ -1071,7 +1088,6 @@ $('exportBtn').addEventListener('click',()=>{
  let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='無限寶藏_會計資料.csv';a.click();
 });
 </script>
-
 <script>
 document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.topNavBtn').forEach(btn=>{
@@ -1085,6 +1101,5 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
 });
 </script>
-
 </body>
 </html>
