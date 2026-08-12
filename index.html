@@ -406,6 +406,26 @@ body.modalOpen{overflow:hidden!important}
   .dialogbody,.formgrid,.formgrid>div{max-width:100%!important;min-width:0!important}
 }
 
+
+.needData{
+  margin-top:10px;
+  padding:9px 11px;
+  border-radius:10px;
+  background:var(--amber2);
+  color:#7A6219;
+  font-size:12px;
+  line-height:1.45;
+}
+.dataComplete{
+  margin-top:10px;
+  padding:8px 10px;
+  border-radius:10px;
+  background:var(--green2);
+  color:var(--green);
+  font-size:12px;
+  font-weight:800;
+}
+
 </style>
 </head>
 <body><header class="topNav"><div class="topBrand">無限寶藏財務總覽</div><nav class="topNavLinks"><button class="topNavBtn active" data-page="dashboardPage" type="button">總覽</button><button class="topNavBtn" data-page="incomePage" type="button">收入</button><button class="topNavBtn" data-page="expensePage" type="button">支出</button><button class="topNavBtn" data-page="confirmPage" type="button">財務確認</button><button class="topNavBtn" data-page="archivePage" type="button">廠商／個人</button><button class="topNavBtn" data-page="withdrawPage" type="button">提領</button></nav><div class="topNavActions"><button class="topQuickBtn" id="topAddExpense" type="button">＋支出</button><button class="topQuickBtn primary" id="topAddIncome" type="button">＋收入</button></div></header>
@@ -489,7 +509,7 @@ body.modalOpen{overflow:hidden!important}
 <button id="logoutBtn"></button>
 <div id="userBox"></div>
 </div>
-<footer>無限寶藏財務總覽｜v11.5 手機資料渲染修正版</footer>
+<footer>無限寶藏財務總覽｜v11.6 分類對應修正版</footer>
 </main>
 </div>
 <div class="modal" id="archiveModal"><div class="dialog" style="width:min(760px,96vw)">
@@ -577,29 +597,41 @@ body.modalOpen{overflow:hidden!important}
   function filterRows(pageId, kind, filter){
     const page=document.getElementById(pageId);
     if(!page)return;
-    const tbody=page.querySelector('tbody');
-    if(tbody){
-      [...tbody.querySelectorAll('tr')].forEach(tr=>{
-        if(tr.querySelector('.empty')){ tr.style.display=''; return; }
-        const text=tr.innerText;
-        let ok=true;
-        if(filter==='unpaid') ok=/未收款|未付款/.test(text);
-        else if(filter==='paid') ok=/已收款|已付款/.test(text);
-        else if(filter==='advance') ok=/寶儀|小白|靖晏|阿牛/.test(text) && !/公司/.test(text);
-        else if(filter==='incomplete') ok=/待確認|待取得|待資料|待申報|未確認/.test(text) || !/✓/.test(text);
-        tr.style.display=ok?'':'none';
-      });
-    }
-    const cards=page.querySelectorAll('.mobileCard');
-    cards.forEach(card=>{
-      const text=card.innerText;
-      let ok=true;
-      if(filter==='unpaid') ok=/未收款|未付款/.test(text);
-      else if(filter==='paid') ok=/已收款|已付款/.test(text);
-      else if(filter==='advance') ok=/寶儀|小白|靖晏|阿牛/.test(text) && !/公司/.test(text);
-      else if(filter==='incomplete') ok=/待確認|待取得|待資料|待申報|未確認/.test(text) || !/✓/.test(text);
-      card.style.display=ok?'':'none';
+
+    const matches=(el)=>{
+      if(filter==='all') return true;
+      if(filter==='unpaid') return el.dataset.paid==='unpaid';
+      if(filter==='paid') return el.dataset.paid==='paid';
+      if(filter==='advance') return el.dataset.advance==='true';
+      if(filter==='incomplete') return el.dataset.incomplete==='true';
+      return true;
+    };
+
+    page.querySelectorAll('tbody tr[data-record="true"]').forEach(el=>{
+      el.style.display=matches(el)?'':'none';
     });
+    page.querySelectorAll('.mobileCard[data-record="true"]').forEach(el=>{
+      el.style.display=matches(el)?'block':'none';
+    });
+
+    const visibleCards=[...page.querySelectorAll('.mobileCard[data-record="true"]')].filter(el=>el.style.display!=='none');
+    let empty=page.querySelector('.filterEmpty');
+    if(!visibleCards.length && window.innerWidth<=760){
+      if(!empty){
+        empty=document.createElement('div');
+        empty.className='mobileEmpty filterEmpty';
+        const target=page.querySelector('.mobileCards');
+        if(target) target.appendChild(empty);
+      }
+      empty.textContent =
+        filter==='unpaid' ? (kind==='income'?'目前沒有待收款':'目前沒有待付款') :
+        filter==='paid' ? (kind==='income'?'目前沒有已收款':'目前沒有已付款') :
+        filter==='advance' ? '目前沒有成員代墊' :
+        filter==='incomplete' ? '目前沒有待補資料' : '目前沒有資料';
+      empty.style.display='block';
+    }else if(empty){
+      empty.style.display='none';
+    }
   }
 
   document.querySelectorAll('.subTabs').forEach(wrap=>{
@@ -685,8 +717,8 @@ function badge(t){let c='info';if(['已收款','已開立','已付款','已取�
 function filtered(arr){let y=$('yearFilter').value,m=$('monthFilter').value;return arr.filter(x=>{if(!x.date)return false;let d=new Date(x.date+'T00:00:00');return String(d.getFullYear())===y&&(m==='all'||d.getMonth()+1===Number(m))})}
 window.renderAll=function(){
   const I=filtered(incomes),E=filtered(expenses);
-  $('incomeBody').innerHTML=I.length?I.map(x=>`<tr><td>${x.date}</td><td>${x.type}</td><td>${x.client||'—'}</td><td>${x.company||x.project||'—'}</td><td>${x.taxId||'—'}</td><td class="money">${money(x.net)}</td><td class="money">${money(x.tax)}</td><td class="money">${money(x.gross)}</td><td>${badge(x.paid)}</td><td>${badge(x.invoice)}</td><td>${x.owner}</td><td>${x.accounting==='資料齊全'?`<button class="checkBtn done" onclick="toggleDataComplete('incomes','${x.id}',false)">✓</button>`:`<button class="checkBtn" onclick="toggleDataComplete('incomes','${x.id}',true)">✓</button>`}</td><td><button class="btn edit" onclick="editIncome('${x.id}')">編輯</button> <button class="btn edit" onclick="copyIncome('${x.id}')">複製</button> <button class="btn delete" onclick="removeIncome('${x.id}')">刪除</button></td></tr>`).join(''):`<tr><td colspan="15" class="empty">尚未登記收入</td></tr>`;
-  $('expenseBody').innerHTML=E.length?E.map(x=>`<tr><td>${x.date}</td><td>${x.type}</td><td>${x.payee||'—'}</td><td>${x.party}</td><td>${x.voucher}</td><td>${x.project||'—'}</td><td class="money">${money(x.net)}</td><td class="money">${money(x.tax)}</td><td class="money">${money(x.gross)}</td><td>${badge(x.paid)}</td><td>${x.payer}</td><td>${badge(x.labor)}</td><td>${badge(x.invoice)}</td><td>${x.owner}</td><td>${x.accounting==='資料齊全'?`<button class="checkBtn done" onclick="toggleDataComplete('expenses','${x.id}',false)">✓</button>`:`<button class="checkBtn" onclick="toggleDataComplete('expenses','${x.id}',true)">✓</button>`}</td><td><button class="btn edit" onclick="editExpense('${x.id}')">編輯</button> <button class="btn edit" onclick="copyExpense('${x.id}')">複製</button> <button class="btn delete" onclick="removeExpense('${x.id}')">刪除</button></td></tr>`).join(''):`<tr><td colspan="18" class="empty">尚未登記支出</td></tr>`;
+  $('incomeBody').innerHTML=I.length?I.map(x=>`<tr data-record="true" data-paid="${x.paid==='已收款'?'paid':'unpaid'}" data-incomplete="${(x.accounting!=='資料齊全'||x.invoice==='待開立'||x.invoice==='待確認')?'true':'false'}"><td>${x.date}</td><td>${x.type}</td><td>${x.client||'—'}</td><td>${x.company||x.project||'—'}</td><td>${x.taxId||'—'}</td><td class="money">${money(x.net)}</td><td class="money">${money(x.tax)}</td><td class="money">${money(x.gross)}</td><td>${badge(x.paid)}</td><td>${badge(x.invoice)}</td><td>${x.owner}</td><td>${x.accounting==='資料齊全'?`<button class="checkBtn done" onclick="toggleDataComplete('incomes','${x.id}',false)">✓</button>`:`<button class="checkBtn" onclick="toggleDataComplete('incomes','${x.id}',true)">✓</button>`}</td><td><button class="btn edit" onclick="editIncome('${x.id}')">編輯</button> <button class="btn edit" onclick="copyIncome('${x.id}')">複製</button> <button class="btn delete" onclick="removeIncome('${x.id}')">刪除</button></td></tr>`).join(''):`<tr><td colspan="15" class="empty">尚未登記收入</td></tr>`;
+  $('expenseBody').innerHTML=E.length?E.map(x=>`<tr data-record="true" data-paid="${x.paid==='已付款'?'paid':'unpaid'}" data-advance="${(x.payer&&x.payer!=='公司')?'true':'false'}" data-incomplete="${(x.accounting!=='資料齊全'||x.invoice==='待取得'||x.invoice==='待確認'||x.labor==='待資料'||x.labor==='待申報')?'true':'false'}"><td>${x.date}</td><td>${x.type}</td><td>${x.payee||'—'}</td><td>${x.party}</td><td>${x.voucher}</td><td>${x.project||'—'}</td><td class="money">${money(x.net)}</td><td class="money">${money(x.tax)}</td><td class="money">${money(x.gross)}</td><td>${badge(x.paid)}</td><td>${x.payer}</td><td>${badge(x.labor)}</td><td>${badge(x.invoice)}</td><td>${x.owner}</td><td>${x.accounting==='資料齊全'?`<button class="checkBtn done" onclick="toggleDataComplete('expenses','${x.id}',false)">✓</button>`:`<button class="checkBtn" onclick="toggleDataComplete('expenses','${x.id}',true)">✓</button>`}</td><td><button class="btn edit" onclick="editExpense('${x.id}')">編輯</button> <button class="btn edit" onclick="copyExpense('${x.id}')">複製</button> <button class="btn delete" onclick="removeExpense('${x.id}')">刪除</button></td></tr>`).join(''):`<tr><td colspan="18" class="empty">尚未登記支出</td></tr>`;
   let inc=I.reduce((s,x)=>s+Number(x.gross||0),0),
       rec=I.filter(x=>x.paid==='已收款').reduce((s,x)=>s+Number(x.gross||0),0),
       unw=I.filter(x=>x.accounting!=='資料齊全').length + E.filter(x=>x.accounting!=='資料齊全'||x.invoice==='待取得'||x.labor==='待資料').length,
@@ -697,7 +729,7 @@ window.renderAll=function(){
   $('kIncome').textContent=money(inc);$('kReceived').textContent=money(rec);$('kUnwithdrawn').textContent=unw+' 筆';$('kReceivable').textContent=money(ar);$('kPayable').textContent=money(ap);$('kNet').textContent=money(bank-paidE);
 
   if($('incomeCards')){
-    $('incomeCards').innerHTML=I.length?I.map(x=>`<div class="mobileCard">
+    $('incomeCards').innerHTML=I.length?I.map(x=>`<div class="mobileCard" data-record="true" data-paid="${x.paid==='已收款'?'paid':'unpaid'}" data-incomplete="${(x.accounting!=='資料齊全'||x.invoice==='待開立'||x.invoice==='待確認')?'true':'false'}">
       <div class="topline"><div><div class="title">${x.company||x.project||x.client||'未命名收入'}</div><div class="mutedtext">${x.type||'—'}｜${x.date||'—'}</div></div><div class="amount">${money(x.gross)}</div></div>
       <div class="meta">
         <div><span>付款方／平台</span>${x.client||'—'}</div>
@@ -705,12 +737,16 @@ window.renderAll=function(){
         <div><span>發票</span>${badge(x.invoice)}</div>
         <div><span>負責人</span>${x.owner||'—'}</div>
       </div>
+      ${(x.accounting!=='資料齊全'||x.invoice==='待開立'||x.invoice==='待確認')?`<div class="needData"><b>待補資料：</b>${[
+        x.accounting!=='資料齊全'?'資料確認':'',
+        (x.invoice==='待開立'||x.invoice==='待確認')?'發票':''
+      ].filter(Boolean).join('、')}</div>`:`<div class="dataComplete">✓ 資料齊全</div>`}
       <details><summary>更多資訊</summary><div class="more">未稅：${money(x.net)}<br>稅額：${money(x.tax)}<br>資料齊全：${x.accounting==='資料齊全'?'✓ 已確認':'未確認'}</div></details>
       <div class="actionsRow"><button class="btn edit" onclick="editIncome('${x.id}')">編輯</button><button class="btn edit" onclick="copyIncome('${x.id}')">複製</button><button class="btn delete" onclick="removeIncome('${x.id}')">刪除</button></div>
     </div>`).join(''):'<div class="mobileEmpty">尚未登記收入</div>';
   }
   if($('expenseCards')){
-    $('expenseCards').innerHTML=E.length?E.map(x=>`<div class="mobileCard">
+    $('expenseCards').innerHTML=E.length?E.map(x=>`<div class="mobileCard" data-record="true" data-paid="${x.paid==='已付款'?'paid':'unpaid'}" data-advance="${(x.payer&&x.payer!=='公司')?'true':'false'}" data-incomplete="${(x.accounting!=='資料齊全'||x.invoice==='待取得'||x.invoice==='待確認'||x.labor==='待資料'||x.labor==='待申報')?'true':'false'}">
       <div class="topline"><div><div class="title">${x.payee||'未命名支出'}</div><div class="mutedtext">${x.type||'—'}｜${x.date||'—'}</div></div><div class="amount">${money(x.gross)}</div></div>
       <div class="meta">
         <div><span>付款</span>${badge(x.paid)}</div>
@@ -718,6 +754,11 @@ window.renderAll=function(){
         <div><span>付款人／代墊</span>${x.payer||'—'}</div>
         <div><span>負責人</span>${x.owner||'—'}</div>
       </div>
+      ${(x.accounting!=='資料齊全'||x.invoice==='待取得'||x.invoice==='待確認'||x.labor==='待資料'||x.labor==='待申報')?`<div class="needData"><b>待補資料：</b>${[
+        x.accounting!=='資料齊全'?'資料確認':'',
+        (x.invoice==='待取得'||x.invoice==='待確認')?'發票／收據':'',
+        (x.labor==='待資料'||x.labor==='待申報')?'勞報':''
+      ].filter(Boolean).join('、')}</div>`:`<div class="dataComplete">✓ 資料齊全</div>`}
       <details><summary>更多資訊</summary><div class="more">專案：${x.project||'—'}<br>未稅：${money(x.net)}<br>稅額：${money(x.tax)}<br>資料齊全：${x.accounting==='資料齊全'?'✓ 已確認':'未確認'}</div></details>
       <div class="actionsRow"><button class="btn edit" onclick="editExpense('${x.id}')">編輯</button><button class="btn edit" onclick="copyExpense('${x.id}')">複製</button><button class="btn delete" onclick="removeExpense('${x.id}')">刪除</button></div>
     </div>`).join(''):'<div class="mobileEmpty">尚未登記支出</div>';
@@ -732,6 +773,31 @@ window.renderAll=function(){
     owner:x.owner
   }));
   $('accountingBody').innerHTML=todos.length?todos.map(r=>`<tr><td>${r.source}</td><td>${r.date}</td><td>${r.name}</td><td class="money">${money(r.amount)}</td><td>${r.issue}</td><td>${r.owner}</td><td><button class="checkBtn" onclick="toggleDataComplete('${r.collection}','${r.id}',true)">✓</button></td></tr>`).join(''):`<tr><td colspan="7" class="empty">全部確認完成 ✓</td></tr>`;
+
+  requestAnimationFrame(()=>{
+    document.querySelectorAll('.subTabs').forEach(wrap=>{
+      const active=wrap.querySelector('.subTab.active');
+      if(active){
+        const pageId=wrap.dataset.for;
+        const kind=pageId==='incomePage'?'income':'expense';
+        const page=document.getElementById(pageId);
+        if(!page)return;
+        const filter=active.dataset.filter;
+        const matches=(el)=>{
+          if(filter==='all') return true;
+          if(filter==='unpaid') return el.dataset.paid==='unpaid';
+          if(filter==='paid') return el.dataset.paid==='paid';
+          if(filter==='advance') return el.dataset.advance==='true';
+          if(filter==='incomplete') return el.dataset.incomplete==='true';
+          return true;
+        };
+        page.querySelectorAll('tbody tr[data-record="true"],.mobileCard[data-record="true"]').forEach(el=>{
+          el.style.display=matches(el)?(el.classList.contains('mobileCard')?'block':''):'none';
+        });
+      }
+    });
+  });
+
   if($('accountingCards')){
     $('accountingCards').innerHTML=todos.length?todos.map(r=>`<div class="mobileCard">
       <div class="topline"><div><div class="title">${r.name}</div><div class="mutedtext">${r.source}｜${r.date}</div></div><div class="amount">${money(r.amount)}</div></div>
