@@ -217,6 +217,94 @@ html,body{max-width:100%;overflow-x:hidden}
   .pageHeader{align-items:center}
   .subTabs{width:100%;overflow-x:auto;flex-wrap:nowrap}
 }
+
+/* v11.1 modal positioning fix */
+.modal{
+  position:fixed!important;
+  inset:0!important;
+  z-index:5000!important;
+  display:none;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:24px!important;
+  background:rgba(36,31,27,.42)!important;
+  overflow-y:auto!important;
+}
+.modal.show{display:flex!important}
+.dialog{
+  position:relative!important;
+  top:auto!important;
+  left:auto!important;
+  transform:none!important;
+  margin:auto!important;
+  width:min(900px,calc(100vw - 48px))!important;
+  max-height:calc(100vh - 48px)!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+  border-radius:18px!important;
+  background:var(--card)!important;
+  box-shadow:0 24px 70px rgba(50,35,20,.22)!important;
+}
+.dialoghead{
+  position:sticky!important;
+  top:0!important;
+  z-index:2!important;
+  background:var(--card)!important;
+  border-bottom:1px solid var(--line)!important;
+  flex:0 0 auto!important;
+}
+.dialogbody{
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  flex:1 1 auto!important;
+  min-height:0!important;
+}
+.dialogfoot{
+  position:sticky!important;
+  bottom:0!important;
+  z-index:2!important;
+  background:var(--card)!important;
+  border-top:1px solid var(--line)!important;
+  flex:0 0 auto!important;
+}
+body.modalOpen{overflow:hidden!important}
+@media(max-width:760px){
+  .modal{
+    align-items:flex-end!important;
+    padding:0!important;
+  }
+  .dialog{
+    width:100%!important;
+    max-width:none!important;
+    max-height:92vh!important;
+    margin:0!important;
+    border-radius:20px 20px 0 0!important;
+  }
+  .dialogbody{padding-bottom:18px!important}
+}
+
+
+/* v11.2 stability fixes */
+.accountcards .empty,
+.accountcards .mobileEmpty,
+#accountCards .empty,
+#accountCards .mobileEmpty{
+  grid-column:1 / -1!important;
+  width:100%!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+  padding:22px 16px!important;
+}
+@media(max-width:520px){
+  .accountcards .empty,
+  .accountcards .mobileEmpty,
+  #accountCards .empty,
+  #accountCards .mobileEmpty{
+    white-space:normal!important;
+  }
+}
+
 </style>
 </head>
 <body><header class="topNav"><div class="topBrand">無限寶藏財務總覽</div><nav class="topNavLinks"><button class="topNavBtn active" data-page="dashboardPage" type="button">總覽</button><button class="topNavBtn" data-page="incomePage" type="button">收入</button><button class="topNavBtn" data-page="expensePage" type="button">支出</button><button class="topNavBtn" data-page="confirmPage" type="button">財務確認</button><button class="topNavBtn" data-page="archivePage" type="button">廠商／個人</button><button class="topNavBtn" data-page="withdrawPage" type="button">提領</button></nav><div class="topNavActions"><button class="topQuickBtn" id="topAddExpense" type="button">＋支出</button><button class="topQuickBtn primary" id="topAddIncome" type="button">＋收入</button></div></header>
@@ -316,7 +404,7 @@ html,body{max-width:100%;overflow-x:hidden}
 <button id="logoutBtn"></button>
 <div id="userBox"></div>
 </div>
-<footer>無限寶藏財務總覽｜v11 上方分頁工作台</footer>
+<footer>無限寶藏財務總覽｜v11.2 穩定修正版</footer>
 </main>
 </div>
 <div class="modal" id="archiveModal"><div class="dialog" style="width:min(760px,96vw)">
@@ -389,9 +477,9 @@ html,body{max-width:100%;overflow-x:hidden}
 <div class="dialogfoot"><button class="btn" onclick="closeModal('expenseModal')">取消</button><button class="btn primary" id="saveExpenseBtn">儲存</button></div>
 </div></div>
 <script>
-function openModal(id){document.getElementById(id).classList.add('show');const t=new Date().toISOString().slice(0,10);if(id==='incomeModal'&&!document.getElementById('iDate').value)document.getElementById('iDate').value=t;if(id==='expenseModal'&&!document.getElementById('eDate').value)document.getElementById('eDate').value=t}
-function closeModal(id){document.getElementById(id).classList.remove('show')}
-window.openModal=openModal;window.closeModal=closeModal;
+
+
+
 </script>
 <script>
 (function(){
@@ -401,8 +489,8 @@ window.openModal=openModal;window.closeModal=closeModal;
     window.scrollTo({top:0,behavior:'instant'});
   }
   document.querySelectorAll('.topNavBtn').forEach(btn=>btn.addEventListener('click',()=>showPage(btn.dataset.page)));
-  document.getElementById('topAddIncome')?.addEventListener('click',()=>{ if(window.resetIncomeForm) resetIncomeForm(); openModal('incomeModal'); });
-  document.getElementById('topAddExpense')?.addEventListener('click',()=>{ if(window.resetExpenseForm) resetExpenseForm(); openModal('expenseModal'); });
+  document.getElementById('topAddIncome')?.addEventListener('click',()=>{ if(window.resetIncomeForm) window.resetIncomeForm(); window.openModal('incomeModal'); });
+  document.getElementById('topAddExpense')?.addEventListener('click',()=>{ if(window.resetExpenseForm) window.resetExpenseForm(); window.openModal('expenseModal'); });
 
   function filterRows(pageId, kind, filter){
     const page=document.getElementById(pageId);
@@ -454,6 +542,23 @@ window.openModal=openModal;window.closeModal=closeModal;
   }
 })();
 </script><script type="module">
+
+window.openModal = function(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.classList.add('show');
+  document.body.classList.add('modalOpen');
+};
+window.closeModal = function(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.classList.remove('show');
+  if(!document.querySelector('.modal.show')){
+    document.body.classList.remove('modalOpen');
+  }
+};
+
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp, query, orderBy, writeBatch } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
@@ -569,7 +674,7 @@ $('eGross').addEventListener('input',()=>calcPair('eNet','eTax','eGross','eRate'
 $('eRate').addEventListener('change',()=>calcPair('eNet','eTax','eGross','eRate','net'));
 
 
-function resetIncomeForm(){
+window.resetIncomeForm=function(){
   editingIncomeId=null;
   $('incomeModalTitle').textContent='新增收入';
   $('saveIncomeBtn').textContent='儲存';
@@ -580,7 +685,7 @@ function resetIncomeForm(){
   $('iDate').value=new Date().toISOString().slice(0,10);
 }
 window.resetIncomeForm=resetIncomeForm;
-function resetExpenseForm(){
+window.resetExpenseForm=function(){
   editingExpenseId=null;
   $('expenseModalTitle').textContent='新增支出';
   $('saveExpenseBtn').textContent='儲存';
@@ -704,7 +809,7 @@ $('yearFilter').addEventListener('change',renderAll);$('monthFilter').addEventLi
 
 
 
-function resetArchiveForm(){
+window.resetArchiveForm=function(){
   editingArchiveId=null; $('archiveModalTitle').textContent='新增付款對象'; $('saveArchiveBtn').textContent='儲存';
   $('arType').value='公司'; ['arName','arTaxId','arBank','arAccountName','arAccountNumber','arExpenseType','arNote'].forEach(id=>$(id).value='');
   $('arVoucher').value='發票'; $('arActive').value='true';
