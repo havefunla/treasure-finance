@@ -643,7 +643,7 @@ body.modalOpen{overflow:hidden!important}
 <button id="exportBtn"></button>
 <div id="userBox"></div>
 </div>
-<footer>無限寶藏財務總覽｜v14.2 手機 Firestore 相容版</footer>
+<footer>無限寶藏財務總覽｜v14.3 手機連線強化版</footer>
 </main>
 </div>
 <div class="modal" id="archiveModal"><div class="dialog" style="width:min(760px,96vw)">
@@ -803,9 +803,9 @@ window.__firebaseSdkLoadError = function(name){
   else show();
 };
 </script>
-<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"
         onerror="window.__firebaseSdkLoadError('firebase-app-compat.js')"></script>
-<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore-compat.js"
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"
         onerror="window.__firebaseSdkLoadError('firebase-firestore-compat.js')"></script>
 <script>
 
@@ -871,18 +871,56 @@ const firebaseConfig = {
   measurementId: "G-F6ETE6E64M"
 };
 
-const app=initializeApp(firebaseConfig);
-const db=getFirestore(app);
-
-// 手機診斷：若 SDK 已啟動但 Firestore listener 長時間沒有任何回應，明確提示，不再永遠顯示「正在連線」。
+// v14.3：初始化過程每一步都顯示狀態，避免手機只停在「正在連線」。
+const __statusEl = document.getElementById('firebaseStatus');
 window.__firestoreConnectedOnce = false;
+
+if (__statusEl) {
+  __statusEl.className = 'firebaseStatus';
+  __statusEl.innerHTML = 'Firebase SDK 已載入，正在初始化…<small>準備連線 Firestore</small>';
+}
+
+// 先啟動 watchdog；就算 initializeApp / firestore() 卡住，也會留下可辨識狀態。
 setTimeout(() => {
   const el = document.getElementById('firebaseStatus');
   if (el && !window.__firestoreConnectedOnce && !el.classList.contains('bad')) {
     el.className = 'firebaseStatus bad';
-    el.innerHTML = 'Firestore 連線逾時<small>SDK 已啟動，但 10 秒內沒有收到 Firestore 回應。請檢查 Firestore Rules、網路或內容阻擋設定。</small>';
+    el.innerHTML = 'Firestore 連線逾時<small>15 秒內沒有收到資料。請確認 Firestore Rules 已允許目前的無登入讀寫。</small>';
   }
-}, 10000);
+}, 15000);
+
+let app, db;
+try {
+  app = initializeApp(firebaseConfig);
+
+  if (__statusEl) {
+    __statusEl.innerHTML = 'Firebase 已初始化，正在建立 Firestore 連線…<small>手機版使用 long-polling 相容模式</small>';
+  }
+
+  db = getFirestore(app);
+
+  // 手機／部分網路環境相容模式：
+  // Firestore 官方提供 long-polling 選項，避免 WebChannel 被代理或網路中介層長時間緩衝。
+  try {
+    db.settings({
+      experimentalForceLongPolling: true,
+      ignoreUndefinedProperties: true
+    });
+  } catch (settingsError) {
+    console.warn('Firestore settings warning:', settingsError);
+  }
+
+} catch (initError) {
+  console.error('Firebase initialization failed:', initError);
+  if (__statusEl) {
+    __statusEl.className = 'firebaseStatus bad';
+    __statusEl.innerHTML =
+      'Firebase 初始化失敗<small>' +
+      (initError.code || 'unknown') + '｜' + (initError.message || String(initError)) +
+      '</small>';
+  }
+  throw initError;
+}
 // v14 無登入版：所有操作以內部使用者標記寫入紀錄。
 const currentOperator={email:'內部使用',uid:'no-auth'};
 
@@ -1070,7 +1108,21 @@ function subscribe(){
 }
 
 // 無登入版：Firebase 初始化完成後直接讀取資料。
-subscribe();
+if (__statusEl && !__statusEl.classList.contains('bad')) {
+  __statusEl.innerHTML = 'Firestore 已啟動，正在讀取資料…<small>等待第一批收入／支出／帳戶資料</small>';
+}
+try {
+  subscribe();
+} catch (subscribeError) {
+  console.error('subscribe failed:', subscribeError);
+  if (__statusEl) {
+    __statusEl.className = 'firebaseStatus bad';
+    __statusEl.innerHTML =
+      'Firestore 監聽啟動失敗<small>' +
+      (subscribeError.code || 'unknown') + '｜' + (subscribeError.message || String(subscribeError)) +
+      '</small>';
+  }
+}
 
 function calcPair(netId,taxId,grossId,rateId,source){
   const r=Number($(rateId).value||0);
