@@ -634,10 +634,9 @@ body.modalOpen{overflow:hidden!important}
 <section class="pageView" id="confirmPage"><div class="pageHeader"><div><h1>財務確認</h1><p>只處理尚未完成的項目，確認後即從待辦移除。</p></div></div><div class="sectionhead legacySectionHead" id="accounting"><h2>財務確認</h2><div class="sub">資料齊全後打勾，待辦就會自動消失。</div></div><div class="card tablebox desktopTable"><div class="scroll"><table><thead><tr><th>來源</th><th>日期</th><th>對象</th><th>金額</th><th>待確認</th><th>負責人</th><th>完成</th></tr></thead><tbody id="accountingBody"><tr><td class="empty" colspan="6">目前沒有會計待辦</td></tr></tbody></table></div></div><div class="mobileCards" id="accountingCards"></div></section>
 <div style="display:none">
 <button id="exportBtn"></button>
-<button id="logoutBtn"></button>
 <div id="userBox"></div>
 </div>
-<footer>無限寶藏財務總覽｜v13 手機登入穩定版</footer>
+<footer>無限寶藏財務總覽｜v14 無登入直達版</footer>
 </main>
 </div>
 <div class="modal" id="archiveModal"><div class="dialog" style="width:min(760px,96vw)">
@@ -784,112 +783,6 @@ body.modalOpen{overflow:hidden!important}
   }
 })();
 </script>
-<script>
-/* v14 single auth UI controller — native form submit for iOS/Android/desktop */
-(function(){
-  window.__firebaseReady=false;
-  window.__firebaseInitError=null;
-  window.performLogin=null;
-
-  const form=document.getElementById('loginForm');
-  const btn=document.getElementById('loginBtn');
-  const email=document.getElementById('loginEmail');
-  const password=document.getElementById('loginPassword');
-  const err=document.getElementById('loginError');
-  const status=document.getElementById('loginStatus');
-
-  function setStatus(message,type){
-    if(!status)return;
-    status.textContent=message||'';
-    status.className='status'+(type?' '+type:'');
-  }
-  window.setLoginStatus=setStatus;
-
-  function setError(message){
-    if(err) err.textContent=message||'';
-  }
-
-  function setBusy(busy){
-    if(!btn)return;
-    btn.disabled=!!busy;
-    btn.textContent=busy?'登入中…':'登入';
-  }
-
-  function friendlyAuthError(e){
-    const code=e && e.code ? String(e.code) : '';
-    if(code==='auth/network-request-failed'){
-      return '登入連線失敗（auth/network-request-failed）。請切換 Wi‑Fi／行動網路後再試；若使用 VPN、廣告阻擋或私人 DNS，請暫時關閉。';
-    }
-    if(code==='auth/invalid-credential' || code==='auth/wrong-password' || code==='auth/user-not-found'){
-      return '電子郵件或密碼不正確。';
-    }
-    if(code==='auth/too-many-requests'){
-      return '登入嘗試次數過多，請稍後再試。';
-    }
-    return '登入失敗：'+((e && e.message) ? e.message : String(e));
-  }
-
-  async function submitLogin(event){
-    if(event) event.preventDefault();
-    setError('');
-
-    const emailValue=(email?.value||'').trim();
-    const passwordValue=password?.value||'';
-    if(!emailValue || !passwordValue){
-      setError('請輸入電子郵件與密碼');
-      return false;
-    }
-
-    if(window.__firebaseInitError){
-      setError('登入服務初始化失敗：'+window.__firebaseInitError);
-      setStatus('請重新整理頁面後再試。','bad');
-      return false;
-    }
-
-    if(!window.__firebaseReady || typeof window.performLogin!=='function'){
-      setError('登入服務尚未完成載入，請稍等 1～2 秒後再按登入。');
-      setStatus(navigator.onLine===false?'目前瀏覽器顯示為離線。':'Firebase 登入服務仍在載入。','bad');
-      return false;
-    }
-
-    setBusy(true);
-    setStatus('正在連線 Firebase…');
-    try{
-      await window.performLogin(emailValue,passwordValue);
-      setStatus('登入成功，正在讀取資料…','ok');
-    }catch(e){
-      console.error('Firebase login failed',e);
-      setError(friendlyAuthError(e));
-      setStatus('網站：'+location.hostname+'｜網路：'+(navigator.onLine===false?'離線':'連線中'),'bad');
-    }finally{
-      setBusy(false);
-    }
-    return false;
-  }
-
-  // One and only one login event path: native form submit.
-  if(form) form.addEventListener('submit',submitLogin);
-
-  // Keep fields explicitly interactive for mobile WebKit.
-  [email,password].forEach(function(el){
-    if(!el)return;
-    el.disabled=false;
-    el.readOnly=false;
-    el.tabIndex=0;
-  });
-
-  window.addEventListener('online',()=>{
-    if(window.__firebaseReady) setStatus('網路已恢復，登入服務已就緒。','ok');
-  });
-  window.addEventListener('offline',()=>setStatus('目前裝置離線，無法登入。','bad'));
-
-  setTimeout(function(){
-    if(!window.__firebaseReady && !window.__firebaseInitError){
-      setStatus('Firebase 登入服務尚未載入完成，請重新整理頁面；若持續發生，請更換網路後再試。','bad');
-    }
-  },8000);
-})();
-</script>
 <script type="module">
 
 window.openModal = function(id){
@@ -909,7 +802,6 @@ window.closeModal = function(id){
 
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp, query, orderBy, writeBatch } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -922,21 +814,10 @@ const firebaseConfig = {
   measurementId: "G-F6ETE6E64M"
 };
 
-let app, auth, db;
-try{
-  app=initializeApp(firebaseConfig);
-  auth=getAuth(app);
-  db=getFirestore(app);
-  window.performLogin=(email,password)=>signInWithEmailAndPassword(auth,email,password);
-  window.__firebaseReady=true;
-  window.setLoginStatus?.('登入服務已就緒','ok');
-}catch(e){
-  window.__firebaseInitError=e?.message||String(e);
-  window.setLoginStatus?.('登入服務初始化失敗','bad');
-  const le=document.getElementById('loginError');
-  if(le) le.textContent='Firebase 初始化失敗：'+window.__firebaseInitError;
-  throw e;
-}
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+// v14 無登入版：所有操作以內部使用者標記寫入紀錄。
+const currentOperator={email:'內部使用',uid:'no-auth'};
 
 let incomes=[], expenses=[], accounts=[], withdrawalHistory=[], archives=[], unsubI=null, unsubE=null, unsubA=null, unsubW=null, unsubAr=null, editingIncomeId=null, editingExpenseId=null, editingAccountId=null, editingArchiveId=null;
 const $=id=>document.getElementById(id);
@@ -1063,30 +944,19 @@ function subscribe(){
   unsubE=onSnapshot(query(collection(db,'expenses'),orderBy('createdAt','desc')),snap=>{
     expenses=snap.docs.map(d=>({id:d.id,...d.data()}));renderAll();
   },err=>{$('expenseBody').innerHTML=`<tr><td colspan="16" class="empty">讀取失敗：${err.message}</td></tr>`});
+  unsubA=onSnapshot(query(collection(db,'accounts'),orderBy('createdAt','desc')),snap=>{
+    accounts=snap.docs.map(d=>({id:d.id,...d.data()}));renderWithdrawals();
+  },err=>{console.error('accounts read failed',err);});
+  unsubW=onSnapshot(query(collection(db,'withdrawals'),orderBy('createdAt','desc')),snap=>{
+    withdrawalHistory=snap.docs.map(d=>({id:d.id,...d.data()}));renderWithdrawals();
+  },err=>{console.error('withdrawals read failed',err);});
+  unsubAr=onSnapshot(query(collection(db,'archives'),orderBy('createdAt','desc')),snap=>{
+    archives=snap.docs.map(d=>({id:d.id,...d.data()}));renderArchive();
+  },err=>{console.error('archives read failed',err);});
 }
 
-$('logoutBtn').addEventListener('click',()=>signOut(auth));
-onAuthStateChanged(auth,user=>{
-  if(user){
-    $('loginOverlay').classList.remove('show');
-    window.setLoginStatus?.('登入成功','ok');
-    $('loginError').textContent='';
-    $('userBox').textContent='';
-    subscribe();
-  }else{
-    if(unsubI)unsubI(); if(unsubE)unsubE(); if(unsubA)unsubA(); if(unsubW)unsubW(); if(unsubAr)unsubAr();
-    unsubI=unsubE=unsubA=unsubW=unsubAr=null;
-    incomes=[];expenses=[];accounts=[];withdrawalHistory=[];archives=[];renderAll();renderWithdrawals();
-    $('userBox').textContent='';
-    $('loginOverlay').classList.add('show');
-    window.setLoginStatus?.('登入服務已就緒','ok');
-  }
-},err=>{
-  window.__firebaseInitError=err?.message||String(err);
-  $('loginOverlay').classList.add('show');
-  $('loginError').textContent='登入狀態讀取失敗：'+window.__firebaseInitError;
-  window.setLoginStatus?.('登入服務發生錯誤','bad');
-});
+// 無登入版：Firebase 初始化完成後直接讀取資料。
+subscribe();
 
 function calcPair(netId,taxId,grossId,rateId,source){
   const r=Number($(rateId).value||0);
@@ -1177,7 +1047,7 @@ window.copyExpense=function(id){
 
 
 window.toggleDataComplete=async function(collectionName,id,complete){
-  const u=auth.currentUser;if(!u)return;
+  const u=currentOperator;
   try{
     await updateDoc(doc(db,collectionName,id),{
       accounting: complete?'資料齊全':'待確認',
@@ -1199,7 +1069,7 @@ window.removeExpense=async function(id){
 }
 
 $('saveIncomeBtn').addEventListener('click',async()=>{
-  const u=auth.currentUser;if(!u)return alert('請先登入');
+  const u=currentOperator;
   const payload={
     date:$('iDate').value,type:$('iType').value,owner:$('iOwner').value,client:$('iClient').value.trim(),company:$('iCompany').value.trim(),taxId:$('iTaxId').value.trim(),project:$('iCompany').value.trim(),
     rate:Number($('iRate').value),net:Number($('iNet').value||0),tax:Number($('iTax').value||0),gross:Number($('iGross').value||0),
@@ -1216,7 +1086,7 @@ $('saveIncomeBtn').addEventListener('click',async()=>{
 });
 
 $('saveExpenseBtn').addEventListener('click',async()=>{
-  const u=auth.currentUser;if(!u)return alert('請先登入');
+  const u=currentOperator;
   const payload={
     date:$('eDate').value,type:$('eType').value,owner:$('eOwner').value,payee:$('ePayee').value.trim(),party:$('eParty').value,pid:$('eId').value.trim(),project:$('eProject').value.trim(),
     rate:Number($('eRate').value),net:Number($('eNet').value||0),tax:Number($('eTax').value||0),gross:Number($('eGross').value||0),
@@ -1304,7 +1174,7 @@ window.removeArchive=async function(id){
   try{await deleteDoc(doc(db,'archives',id));}catch(e){alert('刪除失敗：'+e.message)}
 }
 $('saveArchiveBtn').addEventListener('click',async()=>{
-  const u=auth.currentUser;if(!u)return alert('請先登入');
+  const u=currentOperator;
   const payload={type:$('arType').value,name:$('arName').value.trim(),taxId:$('arTaxId').value.trim(),bank:$('arBank').value.trim(),accountName:$('arAccountName').value.trim(),accountNumber:$('arAccountNumber').value.trim(),voucher:$('arVoucher').value,expenseType:$('arExpenseType').value.trim(),active:$('arActive').value==='true',note:$('arNote').value.trim()};
   if(!payload.name)return alert('請填名稱／姓名');
   try{
@@ -1388,7 +1258,7 @@ window.removeAccount=async function(id){
 window.holdPlatform=async function(incomeId){
   const x=incomes.find(v=>v.id===incomeId);if(!x)return;
   if(!confirm(`確定將「${x.type}｜${x.company||x.project||x.client||''}」標記為保留平台／製作費？`))return;
-  const u=auth.currentUser;if(!u)return;
+  const u=currentOperator;
   try{
     const batch=writeBatch(db);
     batch.update(doc(db,'incomes',incomeId),{fundDisposition:'保留平台',fundUpdatedBy:u.email,fundUpdatedAt:serverTimestamp()});
@@ -1398,7 +1268,7 @@ window.holdPlatform=async function(incomeId){
   }catch(e){alert('更新失敗：'+e.message)}
 }
 $('saveAccountBtn').addEventListener('click',async()=>{
-  const u=auth.currentUser;if(!u)return alert('請先登入');
+  const u=currentOperator;
   const payload={owner:$('aOwner').value,bank:$('aBank').value.trim(),name:$('aName').value.trim(),number:$('aNumber').value.trim(),purpose:$('aPurpose').value.trim(),active:$('aActive').value==='true',note:$('aNote').value.trim()};
   try{
     if(editingAccountId) await updateDoc(doc(db,'accounts',editingAccountId),{...payload,updatedBy:u.email,updatedAt:serverTimestamp()});
@@ -1415,7 +1285,7 @@ $('withdrawSelectedBtn').addEventListener('click',async()=>{
   const items=ids.map(id=>incomes.find(x=>x.id===id)).filter(Boolean);
   const total=items.reduce((s,x)=>s+Number(x.gross||0),0);
   if(!confirm(`本次共提領 ${items.length} 筆，合計 ${money(total)}，提領至「${account.owner}｜${account.bank}｜${account.name}」？`))return;
-  const u=auth.currentUser;if(!u)return;
+  const u=currentOperator;
   try{
     const batch=writeBatch(db);
     items.forEach(x=>batch.update(doc(db,'incomes',x.id),{fundDisposition:'已提領',withdrawalAccountId:account.id,withdrawalAccountLabel:`${account.owner}｜${account.bank}｜${account.name}`,fundUpdatedBy:u.email,fundUpdatedAt:serverTimestamp()}));
