@@ -643,7 +643,7 @@ body.modalOpen{overflow:hidden!important}
 <button id="exportBtn"></button>
 <div id="userBox"></div>
 </div>
-<footer>無限寶藏財務總覽｜v14.1 Firestore 讀取修正版</footer>
+<footer>無限寶藏財務總覽｜v14.2 手機 Firestore 相容版</footer>
 </main>
 </div>
 <div class="modal" id="archiveModal"><div class="dialog" style="width:min(760px,96vw)">
@@ -790,7 +790,24 @@ body.modalOpen{overflow:hidden!important}
   }
 })();
 </script>
-<script type="module">
+<script>
+window.__firebaseSdkLoadError = function(name){
+  const show = () => {
+    const el = document.getElementById('firebaseStatus');
+    if(el){
+      el.className = 'firebaseStatus bad';
+      el.innerHTML = 'Firebase SDK 載入失敗<small>' + name + ' 無法載入。請重新整理或切換網路後再試。</small>';
+    }
+  };
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', show, {once:true});
+  else show();
+};
+</script>
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"
+        onerror="window.__firebaseSdkLoadError('firebase-app-compat.js')"></script>
+<script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore-compat.js"
+        onerror="window.__firebaseSdkLoadError('firebase-firestore-compat.js')"></script>
+<script>
 
 window.openModal = function(id){
   const el = document.getElementById(id);
@@ -808,8 +825,41 @@ window.closeModal = function(id){
 };
 
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+// v14.2：改用 Firebase compat SDK，避免部分手機瀏覽器 ES Module 載入卡住。
+if (typeof firebase === 'undefined' || !firebase.initializeApp || !firebase.firestore) {
+  const statusEl = document.getElementById('firebaseStatus');
+  if (statusEl) {
+    statusEl.className = 'firebaseStatus bad';
+    statusEl.innerHTML = 'Firebase SDK 未成功啟動<small>請重新整理頁面；若仍發生，請切換 Wi‑Fi／行動網路再試。</small>';
+  }
+  throw new Error('Firebase compat SDK unavailable');
+}
+
+const initializeApp = (config) => firebase.apps.length ? firebase.app() : firebase.initializeApp(config);
+const getFirestore = () => firebase.firestore();
+const collection = (db, name) => db.collection(name);
+const addDoc = (colRef, data) => colRef.add(data);
+const updateDoc = (docRef, data) => docRef.update(data);
+const deleteDoc = (docRef) => docRef.delete();
+function doc(first, second, third) {
+  // doc(collectionRef) -> new auto-ID document reference
+  if (arguments.length === 1 || (second === undefined && third === undefined)) {
+    return first.doc();
+  }
+  // doc(db, 'collection', 'id')
+  return first.collection(second).doc(third);
+}
+const onSnapshot = (ref, next, error) => ref.onSnapshot(next, error);
+const serverTimestamp = () => firebase.firestore.FieldValue.serverTimestamp();
+const writeBatch = (db) => {
+  const raw = db.batch();
+  return {
+    update(ref, data){ raw.update(ref, data); },
+    set(ref, data){ raw.set(ref, data); },
+    delete(ref){ raw.delete(ref); },
+    commit(){ return raw.commit(); }
+  };
+};
 
 const firebaseConfig = {
   apiKey: "AIzaSyBdmR8UPcP-I25f4N5lp2cSrxWTlmpHFeA",
@@ -823,6 +873,16 @@ const firebaseConfig = {
 
 const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
+
+// 手機診斷：若 SDK 已啟動但 Firestore listener 長時間沒有任何回應，明確提示，不再永遠顯示「正在連線」。
+window.__firestoreConnectedOnce = false;
+setTimeout(() => {
+  const el = document.getElementById('firebaseStatus');
+  if (el && !window.__firestoreConnectedOnce && !el.classList.contains('bad')) {
+    el.className = 'firebaseStatus bad';
+    el.innerHTML = 'Firestore 連線逾時<small>SDK 已啟動，但 10 秒內沒有收到 Firestore 回應。請檢查 Firestore Rules、網路或內容阻擋設定。</small>';
+  }
+}, 10000);
 // v14 無登入版：所有操作以內部使用者標記寫入紀錄。
 const currentOperator={email:'內部使用',uid:'no-auth'};
 
@@ -949,6 +1009,7 @@ function subscribe(){
   const status=$('firebaseStatus');
   const loaded=new Set();
   const markLoaded=(name,count)=>{
+    window.__firestoreConnectedOnce = true;
     loaded.add(name);
     if(status){
       status.className='firebaseStatus ok';
@@ -957,6 +1018,7 @@ function subscribe(){
     }
   };
   const showReadError=(name,err)=>{
+    window.__firestoreConnectedOnce = true;
     console.error(name+' read failed',err);
     const msg=`${err.code||'unknown'}｜${err.message||err}`;
     if(status){
