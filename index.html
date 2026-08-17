@@ -547,7 +547,7 @@ body.modalOpen{overflow:hidden!important}
 
 <div class="app noSidebar">
 <main id="top">
-<div class="firebaseStatus" id="firebaseStatus">v14.4 已載入<small>準備啟動 Firebase</small></div>
+<div class="firebaseStatus" id="firebaseStatus">v14.5 已載入<small>準備啟動 Firebase</small></div>
 <section class="pageView active" id="dashboardPage"><div class="dashboardHero">
 <div>
 <h1>無限寶藏財務總覽 ✦</h1>
@@ -643,7 +643,7 @@ body.modalOpen{overflow:hidden!important}
 <button id="exportBtn"></button>
 <div id="userBox"></div>
 </div>
-<footer>無限寶藏財務總覽｜v14.4 Firebase 雙 CDN 修正版</footer>
+<footer>無限寶藏財務總覽｜v14.5 手機無限迴圈根治版</footer>
 </main>
 </div>
 <div class="modal" id="archiveModal"><div class="dialog" style="width:min(760px,96vw)">
@@ -757,12 +757,13 @@ body.modalOpen{overflow:hidden!important}
         const target=page.querySelector('.mobileCards');
         if(target) target.appendChild(empty);
       }
-      empty.textContent =
+      const emptyText =
         filter==='unpaid' ? (kind==='income'?'目前沒有待收款':'目前沒有待付款') :
         filter==='paid' ? (kind==='income'?'目前沒有已收款':'目前沒有已付款') :
         filter==='advance' ? '目前沒有成員代墊' :
         filter==='incomplete' ? '目前沒有待補資料' : '目前沒有資料';
-      empty.style.display='block';
+      if(empty.textContent !== emptyText) empty.textContent = emptyText;
+      if(empty.style.display !== 'block') empty.style.display='block';
     }else if(empty){
       empty.style.display='none';
     }
@@ -778,16 +779,21 @@ body.modalOpen{overflow:hidden!important}
     });
   });
 
-  // Reapply active filters after Firebase rerenders tables.
-  const target=document.querySelector('main');
-  if(target){
-    new MutationObserver(()=>{
-      document.querySelectorAll('.subTabs').forEach(wrap=>{
-        const active=wrap.querySelector('.subTab.active');
-        if(active) filterRows(wrap.dataset.for,'',active.dataset.filter);
-      });
-    }).observe(target,{childList:true,subtree:true});
-  }
+  // v14.5：資料重新 render 後才手動套用目前篩選。
+  // 不再使用 MutationObserver，避免手機版 DOM 變化自我觸發造成無限迴圈。
+  window.reapplyActiveFilters = function(){
+    document.querySelectorAll('.subTabs').forEach(wrap=>{
+      const active = wrap.querySelector('.subTab.active');
+      if(active){
+        filterRows(
+          wrap.dataset.for,
+          wrap.dataset.for==='incomePage' ? 'income' : 'expense',
+          active.dataset.filter
+        );
+      }
+    });
+  };
+
 })();
 </script>
 <script>
@@ -981,6 +987,9 @@ window.renderAll=function(){
       <div class="actionsRow"><button class="btn edit" onclick="editExpense('${x.id}')">編輯</button><button class="btn edit" onclick="copyExpense('${x.id}')">複製</button><button class="btn delete" onclick="removeExpense('${x.id}')">刪除</button></div>
     </div>`).join(''):'<div class="mobileEmpty">尚未登記支出</div>';
   }
+
+
+  if(window.reapplyActiveFilters) window.reapplyActiveFilters();
 
 
   let todos=[];
