@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>無限寶藏財務總覽｜Firebase 共編版</title>
+<title>無限寶藏財務系統</title>
 <style>
 :root{
 --bg:#F5EFE6;
@@ -658,16 +658,313 @@ body.modalOpen{overflow:hidden!important}
   }
 }
 
+
+/* ===== V14.9 Premium iOS refinement ===== */
+:root{
+  --ios-bg:#F6F3EE;
+  --ios-surface:rgba(255,255,255,.82);
+  --ios-surface-solid:#FFFEFC;
+  --ios-ink:#201D1A;
+  --ios-secondary:#756F68;
+  --ios-line:rgba(63,51,40,.10);
+  --ios-shadow:0 12px 34px rgba(50,39,28,.075);
+  --ios-shadow-soft:0 3px 12px rgba(50,39,28,.055);
+  --ios-radius:22px;
+  --ios-green:#8EA273;
+  --ios-green-dark:#74895D;
+  --ios-warm:#EEE6DA;
+}
+html{
+  background:var(--ios-bg);
+}
+body{
+  color:var(--ios-ink);
+  background-color:var(--ios-bg);
+  letter-spacing:-.012em;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+body:before{
+  opacity:.42;
+}
+.topbar{
+  background:rgba(248,244,238,.84)!important;
+  border-bottom:1px solid rgba(68,55,43,.08)!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.6) inset;
+  -webkit-backdrop-filter:saturate(150%) blur(22px);
+  backdrop-filter:saturate(150%) blur(22px);
+}
+.brand{
+  font-weight:800!important;
+  letter-spacing:-.035em!important;
+}
+.nav{
+  gap:7px!important;
+}
+.nav button{
+  border-radius:999px!important;
+  padding:10px 15px!important;
+  font-weight:650!important;
+  letter-spacing:-.01em!important;
+  transition:transform .18s ease, background .18s ease, box-shadow .18s ease!important;
+}
+.nav button:hover{
+  background:rgba(255,255,255,.58)!important;
+}
+.nav button.active{
+  background:#25211E!important;
+  color:#fff!important;
+  box-shadow:0 5px 14px rgba(32,28,24,.16)!important;
+}
+.btn{
+  border-radius:14px!important;
+  min-height:44px;
+  font-weight:700!important;
+  border:1px solid rgba(65,51,38,.12)!important;
+  background:rgba(255,255,255,.78)!important;
+  box-shadow:0 2px 8px rgba(50,39,28,.035)!important;
+  transition:transform .14s ease, box-shadow .18s ease, background .18s ease!important;
+}
+.btn:active{
+  transform:scale(.975);
+}
+.btn.primary{
+  background:linear-gradient(180deg,#97AA7D 0%,#879C6D 100%)!important;
+  border-color:rgba(96,116,73,.18)!important;
+  color:#fff!important;
+  box-shadow:0 6px 16px rgba(111,132,84,.18)!important;
+}
+main{
+  max-width:1440px!important;
+  margin:0 auto!important;
+}
+.pageHeader{
+  align-items:flex-end!important;
+  margin-bottom:22px!important;
+}
+.pageHeader h1{
+  font-size:clamp(28px,3vw,38px)!important;
+  line-height:1.05!important;
+  letter-spacing:-.045em!important;
+  font-weight:820!important;
+}
+.pageHeader p{
+  color:var(--ios-secondary)!important;
+  margin-top:8px!important;
+}
+.firebaseStatus{
+  border:1px solid rgba(110,132,84,.14)!important;
+  border-radius:18px!important;
+  background:rgba(239,246,231,.78)!important;
+  box-shadow:0 2px 12px rgba(92,111,72,.04)!important;
+  -webkit-backdrop-filter:blur(16px);
+  backdrop-filter:blur(16px);
+}
+.card,.tableCard,.accountcard,.rule,.archiveWrap{
+  border:1px solid var(--ios-line)!important;
+  background:var(--ios-surface)!important;
+  box-shadow:var(--ios-shadow-soft)!important;
+}
+.card{
+  border-radius:var(--ios-radius)!important;
+  position:relative;
+  overflow:hidden;
+}
+.card:before{
+  content:"";
+  position:absolute;
+  inset:0 0 auto 0;
+  height:1px;
+  background:rgba(255,255,255,.92);
+}
+.card .value{
+  letter-spacing:-.045em!important;
+  font-weight:780!important;
+}
+.card small,.muted{
+  color:var(--ios-secondary)!important;
+}
+.tableCard,.archiveWrap{
+  border-radius:24px!important;
+  overflow:hidden!important;
+}
+table{
+  border-collapse:separate!important;
+  border-spacing:0!important;
+}
+thead th{
+  background:rgba(244,240,234,.82)!important;
+  color:#6F6962!important;
+  font-size:12px!important;
+  font-weight:700!important;
+  letter-spacing:.015em!important;
+  border-bottom:1px solid var(--ios-line)!important;
+}
+tbody td{
+  border-bottom:1px solid rgba(68,55,43,.065)!important;
+}
+tbody tr:hover td{
+  background:rgba(248,245,240,.7)!important;
+}
+input,select,textarea{
+  background:rgba(255,255,255,.88)!important;
+  border:1px solid rgba(71,58,45,.13)!important;
+  border-radius:14px!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset!important;
+  transition:border-color .18s ease, box-shadow .18s ease!important;
+}
+input:focus,select:focus,textarea:focus{
+  outline:none!important;
+  border-color:rgba(126,148,97,.55)!important;
+  box-shadow:0 0 0 4px rgba(142,162,115,.12)!important;
+}
+.subTabs{
+  background:rgba(231,226,218,.66)!important;
+  border-radius:14px!important;
+  padding:4px!important;
+  gap:2px!important;
+}
+.subTab{
+  border-radius:11px!important;
+  transition:.18s ease!important;
+}
+.subTab.active{
+  background:rgba(255,255,255,.96)!important;
+  box-shadow:0 2px 8px rgba(48,39,31,.09)!important;
+}
+.badge{
+  border-radius:999px!important;
+  font-weight:700!important;
+}
+.modal{
+  background:rgba(28,25,22,.38)!important;
+  -webkit-backdrop-filter:blur(10px);
+  backdrop-filter:blur(10px);
+}
+.dialog{
+  background:rgba(255,254,251,.96)!important;
+  border:1px solid rgba(255,255,255,.72)!important;
+  box-shadow:0 28px 80px rgba(27,23,19,.24)!important;
+}
+.dialoghead,.dialogfoot{
+  background:rgba(255,254,251,.9)!important;
+  -webkit-backdrop-filter:blur(18px);
+  backdrop-filter:blur(18px);
+}
+.dialoghead{
+  border-bottom:1px solid rgba(65,51,38,.08)!important;
+}
+.dialogfoot{
+  border-top:1px solid rgba(65,51,38,.08)!important;
+}
+.empty{
+  color:#8A837B!important;
+}
+footer{
+  color:#918A82!important;
+}
+
+/* Desktop dashboard: more editorial spacing */
+@media(min-width:761px){
+  main{padding:32px 42px 48px!important;}
+  .topbar{padding-left:36px!important;padding-right:36px!important;}
+  .grid{gap:16px!important;}
+  .card{padding:22px!important;}
+}
+
+/* iOS/mobile polish */
+@media(max-width:760px){
+  body{
+    background:#F7F4EF!important;
+  }
+  .topbar{
+    padding:14px 16px 10px!important;
+    gap:12px!important;
+  }
+  .brand{
+    font-size:18px!important;
+    white-space:nowrap;
+  }
+  .quick{
+    gap:8px!important;
+  }
+  .quick .btn{
+    min-height:42px!important;
+    padding:9px 13px!important;
+    border-radius:13px!important;
+  }
+  .nav{
+    margin-top:12px!important;
+    padding-bottom:4px!important;
+    gap:4px!important;
+    scrollbar-width:none;
+  }
+  .nav::-webkit-scrollbar{display:none;}
+  .nav button{
+    min-height:42px!important;
+    padding:9px 14px!important;
+    flex:0 0 auto!important;
+  }
+  main{
+    padding:20px 16px calc(34px + env(safe-area-inset-bottom))!important;
+  }
+  .firebaseStatus{
+    border-radius:16px!important;
+    padding:13px 15px!important;
+    margin-bottom:22px!important;
+  }
+  .pageHeader{
+    margin-bottom:18px!important;
+  }
+  .pageHeader h1{
+    font-size:30px!important;
+  }
+  .grid{
+    gap:12px!important;
+  }
+  .card{
+    border-radius:20px!important;
+    padding:18px!important;
+    min-height:132px;
+  }
+  .card .value{
+    font-size:27px!important;
+  }
+  .tableCard,.archiveWrap{
+    border-radius:20px!important;
+  }
+  .mobileCard{
+    border:1px solid rgba(63,51,40,.09)!important;
+    border-radius:18px!important;
+    background:rgba(255,255,255,.84)!important;
+    box-shadow:0 3px 12px rgba(50,39,28,.045)!important;
+    margin-bottom:10px!important;
+  }
+  .modal .dialog{
+    background:rgba(255,254,251,.985)!important;
+    border-radius:26px 26px 0 0!important;
+  }
+  .modal .dialoghead{
+    padding:17px 18px!important;
+  }
+  .modal .dialogbody{
+    padding:18px!important;
+  }
+  .modal .dialogfoot{
+    padding:12px 18px calc(12px + env(safe-area-inset-bottom))!important;
+  }
+}
+
 </style>
 </head>
-<body><header class="topNav"><div class="topBrand">無限寶藏財務總覽</div><nav class="topNavLinks"><button class="topNavBtn active" data-page="dashboardPage" type="button">總覽</button><button class="topNavBtn" data-page="incomePage" type="button">收入</button><button class="topNavBtn" data-page="expensePage" type="button">支出</button><button class="topNavBtn" data-page="confirmPage" type="button">財務確認</button><button class="topNavBtn" data-page="archivePage" type="button">廠商／個人</button><button class="topNavBtn" data-page="withdrawPage" type="button">提領</button></nav><div class="topNavActions"><button class="topQuickBtn" id="topAddExpense" type="button">＋支出</button><button class="topQuickBtn primary" id="topAddIncome" type="button">＋收入</button></div></header>
+<body><header class="topNav"><div class="topBrand">無限寶藏財務系統</div><nav class="topNavLinks"><button class="topNavBtn active" data-page="dashboardPage" type="button">總覽</button><button class="topNavBtn" data-page="incomePage" type="button">收入</button><button class="topNavBtn" data-page="expensePage" type="button">支出</button><button class="topNavBtn" data-page="confirmPage" type="button">財務確認</button><button class="topNavBtn" data-page="archivePage" type="button">廠商／個人</button><button class="topNavBtn" data-page="withdrawPage" type="button">提領</button></nav><div class="topNavActions"><button class="topQuickBtn" id="topAddExpense" type="button">＋支出</button><button class="topQuickBtn primary" id="topAddIncome" type="button">＋收入</button></div></header>
 
 <div class="app noSidebar">
 <main id="top">
-<div class="firebaseStatus" id="firebaseStatus">v14.7 已載入<small>準備啟動 Firebase</small></div>
+<div class="firebaseStatus" id="firebaseStatus">v14.9 已載入<small>準備啟動 Firebase</small></div>
 <section class="pageView active" id="dashboardPage"><div class="dashboardHero">
 <div>
-<h1>無限寶藏財務總覽 ✦</h1>
+<h1>整體總覽 ✦</h1>
 </div>
 </div><div class="filters">
 <select class="field" id="yearFilter"><option>2026</option><option>2025</option><option>2024</option></select>
@@ -682,7 +979,7 @@ body.modalOpen{overflow:hidden!important}
 </div><div class="card panel mapAccent" style="margin-top:14px">
 <div class="notice"><b>金額規則：</b>每筆交易同時保留未稅、稅額、含稅。收入表只追蹤專案、付款方、收款狀態與發票；付款方式、代墊人、勞報與收據集中在支出表管理。</div>
 </div></section>
-<section class="pageView" id="incomePage"><div class="pageHeader"><div><h1>收入管理</h1><p>管理應收、已收款與收入資料完整性。</p></div><button class="btn primary" onclick="resetIncomeForm();openModal('incomeModal')" type="button">＋新增收入</button></div>
+<section class="pageView" id="incomePage"><div class="pageHeader"><div><h1>收入管理</h1><p>管理應收、已收款與收入資料完整性。</p></div></div>
 <div class="linkedPeriod">
   <span class="linkedPeriodLabel">期間</span>
   <select class="field" id="incomeYearFilter">
@@ -698,7 +995,7 @@ body.modalOpen{overflow:hidden!important}
     <option value="10">10 月</option><option value="11">11 月</option><option value="12">12 月</option>
   </select>
 </div><div class="subTabs" data-for="incomePage"><button class="subTab active" data-filter="all" type="button">全部</button><button class="subTab" data-filter="unpaid" type="button">待收款</button><button class="subTab" data-filter="paid" type="button">已收款</button><button class="subTab" data-filter="incomplete" type="button">待補資料</button></div><div class="sectionhead legacySectionHead" id="income"><h2>收入管理</h2><button class="btn primary" onclick="resetIncomeForm();openModal('incomeModal')">＋新增收入</button></div><div class="card tablebox desktopTable"><div class="scroll"><table><thead><tr><th>日期</th><th>類型</th><th>付款方／平台</th><th>專案名稱</th><th>統編</th><th>未稅</th><th>稅額</th><th>含稅</th><th>收款</th><th>發票</th><th>負責人</th><th>資料齊全</th><th>操作</th></tr></thead><tbody id="incomeBody"><tr><td class="empty" colspan="15">登入後讀取資料...</td></tr></tbody></table></div></div><div class="mobileCards" id="incomeCards"></div></section>
-<section class="pageView" id="expensePage"><div class="pageHeader"><div><h1>支出管理</h1><p>管理付款、代墊、憑證與勞報。</p></div><button class="btn primary" onclick="resetExpenseForm();openModal('expenseModal')" type="button">＋新增支出</button></div>
+<section class="pageView" id="expensePage"><div class="pageHeader"><div><h1>支出管理</h1><p>管理付款、代墊、憑證與勞報。</p></div></div>
 <div class="linkedPeriod">
   <span class="linkedPeriodLabel">期間</span>
   <select class="field" id="expenseYearFilter">
@@ -714,8 +1011,8 @@ body.modalOpen{overflow:hidden!important}
     <option value="10">10 月</option><option value="11">11 月</option><option value="12">12 月</option>
   </select>
 </div><div class="subTabs" data-for="expensePage"><button class="subTab active" data-filter="all" type="button">全部</button><button class="subTab" data-filter="unpaid" type="button">待付款</button><button class="subTab" data-filter="paid" type="button">已付款</button><button class="subTab" data-filter="advance" type="button">成員代墊</button><button class="subTab" data-filter="incomplete" type="button">待補資料</button></div><div class="sectionhead legacySectionHead" id="expense"><h2>支出管理</h2><button class="btn primary" onclick="resetExpenseForm();openModal('expenseModal')">＋新增支出</button></div><div class="card tablebox desktopTable"><div class="scroll"><table><thead><tr><th>日期</th><th>類型</th><th>收款人／廠商</th><th>對象</th><th>憑證</th><th>專案</th><th>未稅</th><th>稅額</th><th>含稅</th><th>付款</th><th>付款人／代墊</th><th>勞報</th><th>發票／收據</th><th>負責人</th><th>資料齊全</th><th>操作</th></tr></thead><tbody id="expenseBody"><tr><td class="empty" colspan="18">登入後讀取資料...</td></tr></tbody></table></div></div><div class="mobileCards" id="expenseCards"></div></section>
-<section class="pageView" id="archivePage"><div class="pageHeader"><div><h1>廠商／個人資料庫</h1><p>常用付款對象集中管理，新增支出時可直接帶入。</p></div><button class="btn primary" type="button" onclick="resetArchiveForm();openModal('archiveModal')">＋新增廠商／個人</button></div><div class="sectionhead legacySectionHead" id="archive"><h2>廠商／個人資料庫</h2><button class="btn primary" onclick="resetArchiveForm();openModal('archiveModal')">＋新增歸檔</button></div><div class="card panel">
-<div class="notice">常用付款對象集中在這裡。新增支出時可直接選取，不用重打名稱、統編、銀行、戶名、帳號與常用憑證。</div>
+<section class="pageView" id="archivePage"><div class="pageHeader"><div><h1>廠商／個人資料庫</h1><p>常用付款對象集中管理，新增支出時可直接帶入。</p></div><div class="actions"><button class="btn" type="button" onclick="reconcileCompletedTransactionsToArchive(true)">↻ 自動整理</button><button class="btn primary" type="button" onclick="resetArchiveForm();openModal('archiveModal')">＋新增廠商／個人</button></div></div><div class="sectionhead legacySectionHead" id="archive"><h2>廠商／個人資料庫</h2><button class="btn primary" onclick="resetArchiveForm();openModal('archiveModal')">＋新增歸檔</button></div><div class="card panel">
+<div class="notice">資料齊全的收入付款方與支出收款人會自動整理到這裡；同統編／同名稱會去重。新增支出時可直接選取，不用重打名稱、統編、銀行、戶名、帳號與常用憑證。</div>
 <div class="filters" style="margin-top:12px">
 <select class="field" id="archiveTypeFilter" onchange="renderArchive()"><option value="all">全部類型</option><option value="公司">公司／廠商</option><option value="個人">個人戶</option></select>
 <input class="field" id="archiveSearch" oninput="renderArchive()" placeholder="搜尋名稱／統編／銀行"/>
@@ -760,7 +1057,7 @@ body.modalOpen{overflow:hidden!important}
 <button id="exportBtn"></button>
 <div id="userBox"></div>
 </div>
-<footer>無限寶藏財務總覽｜v14.7 手機表單版型修正版</footer>
+<footer>無限寶藏財務系統｜V14.9</footer>
 </main>
 </div>
 <div class="modal" id="archiveModal"><div class="dialog" style="width:min(760px,96vw)">
@@ -805,7 +1102,7 @@ body.modalOpen{overflow:hidden!important}
 <div><label>含稅金額</label><input id="iGross" type="number" value="0"/></div>
 <div><label>收款狀態</label><select id="iPaid"><option>未收款</option><option>已收款</option></select></div>
 <div><label>發票狀態</label><select id="iInvoice"><option>待確認</option><option>待開立</option><option>已開立</option><option>免開／境外</option></select></div>
-<div><label>資料齊全</label><select id="iAccounting"><option value="待確認">未確認</option><option value="資料齊全">✓ 已確認</option></select></div>
+<div><label>資料齊全</label><select id="iAccounting"><option value="待確認">未確認</option><option value="資料齊全">✓ 已確認</option></select><small style="display:block;margin-top:5px;color:var(--muted)">✓ 已確認後，付款方會自動同步到廠商／個人資料庫</small></div>
 <div class="full"><label>備註</label><textarea id="iNote"></textarea></div>
 </div></div>
 <div class="dialogfoot"><button class="btn" onclick="closeModal('incomeModal')">取消</button><button class="btn primary" id="saveIncomeBtn">儲存</button></div>
@@ -827,7 +1124,7 @@ body.modalOpen{overflow:hidden!important}
 <div><label>憑證類型</label><select id="eVoucher"><option>發票</option><option>勞報</option><option>收據</option><option>無憑證</option><option>待確認</option></select></div>
 <div><label>勞報狀態</label><select id="eLabor"><option>不適用</option><option>待資料</option><option>待申報</option><option>已完成</option></select></div>
 <div><label>發票／收據狀態</label><select id="eInvoice"><option>待取得</option><option>已取得</option><option>不適用</option></select></div>
-<div><label>資料齊全</label><select id="eAccounting"><option value="待確認">未確認</option><option value="資料齊全">✓ 已確認</option></select></div>
+<div><label>資料齊全</label><select id="eAccounting"><option value="待確認">未確認</option><option value="資料齊全">✓ 已確認</option></select><small style="display:block;margin-top:5px;color:var(--muted)">✓ 已確認後，收款人會自動同步到廠商／個人資料庫；成員代墊除外</small></div>
 <div class="full"><label>備註</label><textarea id="eNote"></textarea></div>
 </div></div>
 <div class="dialogfoot"><button class="btn" onclick="closeModal('expenseModal')">取消</button><button class="btn primary" id="saveExpenseBtn">儲存</button></div>
@@ -1046,6 +1343,221 @@ function isWithdrawEligibleIncome(x){
   return x.paid==='已收款';
 }
 
+
+function normalizePartyName(v){
+  return String(v||'').trim().replace(/\s+/g,'').replace(/[()（）\-－_]/g,'').toLowerCase();
+}
+function normalizeTaxId(v){
+  return String(v||'').replace(/\D/g,'').trim();
+}
+function findArchiveMatch(data){
+  const taxId=normalizeTaxId(data.taxId);
+  const nameKey=normalizePartyName(data.name);
+
+  // 1. 統編相同：視為同一家公司
+  if(taxId){
+    const byTax=archives.find(a=>normalizeTaxId(a.taxId)===taxId);
+    if(byTax) return {record:byTax,reason:'taxId'};
+  }
+
+  // 2. 名稱相同：只有唯一一筆時才允許自動合併
+  if(nameKey){
+    const same=archives.filter(a=>normalizePartyName(a.name)===nameKey);
+    if(same.length===1){
+      const oldTax=normalizeTaxId(same[0].taxId);
+      if(taxId && oldTax && taxId!==oldTax){
+        return {conflict:true,record:same[0],reason:'name-tax-conflict'};
+      }
+      return {record:same[0],reason:'name'};
+    }
+    if(same.length>1) return {conflict:true,reason:'duplicate-name'};
+  }
+  return null;
+}
+function buildMissingArchivePatch(existing,incoming){
+  const patch={};
+  ['taxId','bank','accountName','accountNumber','voucher','expenseType'].forEach(k=>{
+    const oldVal=existing?.[k];
+    const newVal=incoming?.[k];
+    if((oldVal===undefined || oldVal===null || String(oldVal).trim()==='') &&
+       newVal!==undefined && newVal!==null && String(newVal).trim()!==''){
+      patch[k]=newVal;
+    }
+  });
+  return patch;
+}
+
+let __archiveReconcileTimer=null;
+let __archiveReconcileRunning=false;
+let __archiveReconcileDoneIds=new Set();
+
+function scheduleArchiveReconcile(){
+  clearTimeout(__archiveReconcileTimer);
+  __archiveReconcileTimer=setTimeout(()=>reconcileCompletedTransactionsToArchive(false),500);
+}
+
+async function reconcileCompletedTransactionsToArchive(force=false){
+  if(__archiveReconcileRunning) return;
+  __archiveReconcileRunning=true;
+
+  if(force) __archiveReconcileDoneIds.clear();
+
+  try{
+    const jobs=[];
+
+    incomes.forEach(x=>{
+      if(x.accounting!=='資料齊全') return;
+      const key='income:'+x.id;
+      if(!x.id || __archiveReconcileDoneIds.has(key)) return;
+
+      const name=String(x.client||'').trim();
+      if(name.length<2){
+        __archiveReconcileDoneIds.add(key);
+        return;
+      }
+
+      jobs.push({
+        key,
+        data:{
+          sourceLabel:'收入',
+          accounting:x.accounting,
+          type:'公司',
+          name,
+          taxId:x.taxId||'',
+          voucher:x.invoice==='已開立' ? '發票' : '待確認',
+          expenseType:'收入付款方'
+        }
+      });
+    });
+
+    expenses.forEach(x=>{
+      if(x.accounting!=='資料齊全') return;
+      if(x.party==='成員代墊') return;
+
+      const key='expense:'+x.id;
+      if(!x.id || __archiveReconcileDoneIds.has(key)) return;
+
+      const name=String(x.payee||'').trim();
+      if(name.length<2){
+        __archiveReconcileDoneIds.add(key);
+        return;
+      }
+
+      jobs.push({
+        key,
+        data:{
+          sourceLabel:'支出',
+          accounting:x.accounting,
+          type:x.party==='個人' ? '個人' : '公司',
+          name,
+          taxId:x.party==='公司' ? (x.pid||'') : '',
+          voucher:x.voucher||'待確認',
+          expenseType:x.type||''
+        }
+      });
+    });
+
+    let created=0,updated=0,conflict=0,error=0;
+
+    for(const job of jobs){
+      const result=await syncArchiveFromTransaction(job.data,{silent:true});
+      __archiveReconcileDoneIds.add(job.key);
+      if(result?.status==='created') created++;
+      else if(result?.status==='updated') updated++;
+      else if(result?.status==='conflict') conflict++;
+      else if(result?.status==='error') error++;
+    }
+
+    if(force || created || updated || conflict || error){
+      const parts=[];
+      if(created) parts.push(`新增 ${created}`);
+      if(updated) parts.push(`補齊 ${updated}`);
+      if(conflict) parts.push(`待確認 ${conflict}`);
+      if(error) parts.push(`失敗 ${error}`);
+      showArchiveSyncToast(parts.length ? `✓ 自動整理完成：${parts.join('、')} 筆` : '✓ 已檢查完成，沒有需要新增的廠商／個人');
+    }
+  }catch(err){
+    console.error('archive reconcile failed',err);
+    if(force) showArchiveSyncToast('⚠️ 自動整理失敗，請稍後再試');
+  }finally{
+    __archiveReconcileRunning=false;
+  }
+}
+
+function showArchiveSyncToast(message){
+  let el=document.getElementById('archiveSyncToast');
+  if(!el){
+    el=document.createElement('div');
+    el.id='archiveSyncToast';
+    el.style.cssText='position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:99999;max-width:min(92vw,560px);padding:11px 14px;border-radius:12px;background:#2A2623;color:#fff;font-size:13px;line-height:1.45;box-shadow:0 10px 30px rgba(0,0,0,.18);opacity:0;transition:.2s';
+    document.body.appendChild(el);
+  }
+  el.textContent=message;
+  el.style.opacity='1';
+  clearTimeout(window.__archiveToastTimer);
+  window.__archiveToastTimer=setTimeout(()=>{el.style.opacity='0'},3200);
+}
+async function syncArchiveFromTransaction(data,options={}){
+  // 防呆 1：只有「資料齊全」的交易才同步
+  if(data.accounting!=='資料齊全') return {status:'not-complete'};
+
+  // 防呆 2：成員代墊不是廠商／個人付款對象，不自動歸檔
+  if(data.skipArchive) return {status:'skipped'};
+
+  const name=String(data.name||'').trim();
+  if(name.length<2) return {status:'missing-name'};
+
+  const incoming={
+    type:data.type||'公司',
+    name,
+    taxId:String(data.taxId||'').trim(),
+    bank:String(data.bank||'').trim(),
+    accountName:String(data.accountName||'').trim(),
+    accountNumber:String(data.accountNumber||'').trim(),
+    voucher:data.voucher||'待確認',
+    expenseType:data.expenseType||''
+  };
+
+  try{
+    const match=findArchiveMatch(incoming);
+
+    // 防呆 3：同名但統編衝突／同名多筆時，不自動合併
+    if(match?.conflict){
+      if(!options.silent) showArchiveSyncToast(`⚠️「${name}」可能與既有資料重複，交易已儲存，但未自動合併資料庫`);
+      return {status:'conflict'};
+    }
+
+    // 防呆 4：已存在時只補空白，不覆蓋人工維護的既有資料
+    if(match?.record){
+      const patch=buildMissingArchivePatch(match.record,incoming);
+      if(Object.keys(patch).length){
+        patch.updatedAt=serverTimestamp();
+        patch.lastSyncedFrom=data.sourceLabel||'交易';
+        await updateDoc(doc(db,'archives',match.record.id),patch);
+        if(!options.silent) showArchiveSyncToast(`✓ 已補齊「${name}」的廠商／個人資料`);
+        return {status:'updated'};
+      }
+      return {status:'exists'};
+    }
+
+    await addDoc(collection(db,'archives'),{
+      ...incoming,
+      active:true,
+      note:`由${data.sourceLabel||'交易'}自動建立`,
+      autoCreated:true,
+      lastSyncedFrom:data.sourceLabel||'交易',
+      createdAt:serverTimestamp(),
+      updatedAt:serverTimestamp()
+    });
+    if(!options.silent) showArchiveSyncToast(`＋ 已自動加入「${name}」到廠商／個人資料庫`);
+    return {status:'created'};
+  }catch(err){
+    console.error('syncArchiveFromTransaction failed',err);
+    if(!options.silent) showArchiveSyncToast(`⚠️ 交易已儲存，但「${name}」同步資料庫失敗`);
+    return {status:'error'};
+  }
+}
+
 function formatTimestamp(ts){
   if(!ts)return '—';
   try{
@@ -1180,6 +1692,7 @@ function subscribe(){
   unsubI=onSnapshot(collection(db,'incomes'),snap=>{
     incomes=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
     renderAll(); markLoaded('收入',incomes.length);
+    scheduleArchiveReconcile();
   },err=>{
     const msg=showReadError('收入',err);
     $('incomeBody').innerHTML=`<tr><td colspan="16" class="empty">讀取失敗：${msg}</td></tr>`;
@@ -1189,6 +1702,7 @@ function subscribe(){
   unsubE=onSnapshot(collection(db,'expenses'),snap=>{
     expenses=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
     renderAll(); markLoaded('支出',expenses.length);
+    scheduleArchiveReconcile();
   },err=>{
     const msg=showReadError('支出',err);
     $('expenseBody').innerHTML=`<tr><td colspan="16" class="empty">讀取失敗：${msg}</td></tr>`;
@@ -1214,6 +1728,7 @@ function subscribe(){
     renderArchive();
     renderArchiveSelect();
     markLoaded('廠商／個人',archives.length);
+    scheduleArchiveReconcile();
   },err=>{
     const msg=showReadError('廠商／個人',err);
     if($('archiveCards')) $('archiveCards').innerHTML=`<div class="mobileEmpty">廠商／個人讀取失敗：${msg}</div>`;
@@ -1364,6 +1879,19 @@ $('saveIncomeBtn').addEventListener('click',async()=>{
     }else{
       await addDoc(collection(db,'incomes'),{...payload,fundDisposition:'可提領',createdBy:u.email,createdByUid:u.uid,createdAt:serverTimestamp(),updatedBy:'',updatedAt:null});
     }
+
+    // 收入防呆：只有資料齊全後才把付款方同步成廠商／個人資料。
+    // 已知平台收入也可以建立；有統編時以統編去重，沒有統編則以名稱去重。
+    await syncArchiveFromTransaction({
+      sourceLabel:'收入',
+      accounting:payload.accounting,
+      type:'公司',
+      name:payload.client,
+      taxId:payload.taxId,
+      voucher:payload.invoice==='已開立' ? '發票' : '待確認',
+      expenseType:'收入付款方'
+    });
+
     closeModal('incomeModal');resetIncomeForm();
   }catch(e){alert('收入儲存失敗：'+e.message)}
 });
@@ -1381,6 +1909,20 @@ $('saveExpenseBtn').addEventListener('click',async()=>{
     }else{
       await addDoc(collection(db,'expenses'),{...payload,createdBy:u.email,createdByUid:u.uid,createdAt:serverTimestamp(),updatedBy:'',updatedAt:null});
     }
+
+    // 支出防呆：資料齊全後，自動同步收款人／廠商。
+    // 成員代墊不會被誤建成廠商。
+    await syncArchiveFromTransaction({
+      sourceLabel:'支出',
+      accounting:payload.accounting,
+      skipArchive:payload.party==='成員代墊',
+      type:payload.party==='個人' ? '個人' : '公司',
+      name:payload.payee,
+      taxId:payload.party==='公司' ? payload.pid : '',
+      voucher:payload.voucher,
+      expenseType:payload.type
+    });
+
     closeModal('expenseModal');resetExpenseForm();
   }catch(e){alert('支出儲存失敗：'+e.message)}
 });
@@ -1435,7 +1977,7 @@ window.renderArchive=function(){
   $('archiveCards').innerHTML=list.length?list.map(a=>`<div class="accountcard">
     <b>${a.name||'未命名'} <span class="badge ${a.active===false?'wait':'ok'}">${a.type||'—'}</span></b>
     <small>${a.taxId?`統編：${a.taxId}｜`:''}${a.bank||'—'} ${a.accountNumber||''}</small>
-    <small>${a.voucher||'—'}${a.expenseType?`｜${a.expenseType}`:''}</small>
+    <small>${a.voucher||'—'}${a.expenseType?`｜${a.expenseType}`:''}${a.autoCreated?`｜自動建立`:''}</small>
     <div style="margin-top:8px"><button class="btn edit" onclick="editArchive('${a.id}')">編輯</button> <button class="btn delete" onclick="removeArchive('${a.id}')">刪除</button></div>
   </div>`).join(''):`<div class="empty">
     <div style="margin-bottom:12px">尚未建立付款對象歸檔</div>
