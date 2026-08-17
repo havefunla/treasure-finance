@@ -44,6 +44,9 @@ main{padding:28px 30px;max-width:none;width:100%;min-width:0;overflow-x:hidden}.
 .tablebox{overflow:hidden;max-width:100%}.scroll{overflow-x:auto;overflow-y:visible;max-width:100%;-webkit-overflow-scrolling:touch}table{border-collapse:collapse;width:100%;min-width:1080px}th,td{padding:10px 11px;border-bottom:1px solid var(--line);font-size:12px;white-space:nowrap;text-align:left}th{background:#f8fafc;color:#667085;font-weight:700}.money{text-align:right}.badge{display:inline-flex;padding:4px 9px;border-radius:99px;font-size:11px;font-weight:800}.checkBtn{width:28px;height:28px;border-radius:50%;border:1px solid #DCCEBF;background:#FFFDF8;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-weight:900;color:#A59A8C}.checkBtn.done{background:var(--green);border-color:var(--green);color:#fff}.softSection{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}.ok{background:var(--green2);color:var(--green)}.wait{background:var(--amber2);color:var(--amber)}.info{background:var(--blue2);color:var(--blue)}.bad{background:var(--red2);color:var(--red)}
 .membergrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.withdrawgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.accountcards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.accountcard{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff}.accountcard b{display:block}.accountcard small{color:var(--muted);display:block;margin-top:4px}.checkcell{text-align:center}.summarybar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;background:#fafbfc;border:1px solid var(--line);border-radius:10px;margin-bottom:10px}.summarybar strong{font-size:18px}.mutedtext{color:var(--muted);font-size:12px}.member{border:1px solid var(--line);border-radius:10px;padding:13px}.member b{display:block}.member small{color:var(--muted)}
 .modal,.loginOverlay{display:none;position:fixed;inset:0;background:rgba(12,18,26,.48);align-items:center;justify-content:center;padding:20px;z-index:20}.modal.show,.loginOverlay.show{display:flex}.dialog{width:min(940px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:15px}.loginCard{width:min(420px,92vw);background:white;border-radius:16px;padding:24px}.loginCard h2{margin-top:0}.loginCard input{width:100%;padding:11px;border:1px solid var(--line);border-radius:9px;margin:7px 0 12px}.loginCard .error{color:var(--red);font-size:12px;min-height:18px}
+.loginCard .status{font-size:12px;min-height:18px;margin-top:2px;color:var(--muted)}
+.loginCard .status.ok{color:var(--green)}
+.loginCard .status.bad{color:var(--red)}
 .dialoghead,.dialogfoot{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.dialogfoot{border-bottom:0;border-top:1px solid var(--line);justify-content:flex-end;gap:8px}.dialogbody{padding:18px 20px}.formgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.formgrid .full{grid-column:1/-1}.formgrid label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}.formgrid input,.formgrid select,.formgrid textarea{width:100%;border:1px solid #dbe0e7;border-radius:8px;padding:9px;font:inherit;font-size:13px}.formgrid textarea{min-height:70px}
 .empty{padding:24px;text-align:center;color:var(--muted)}.userbox{font-size:12px;color:var(--muted)}footer{color:#8a95a5;font-size:11px;margin:28px 0}
 @media(max-width:1100px){
@@ -531,22 +534,22 @@ body.modalOpen{overflow:hidden!important}
   }
 }
 
-/* While login is visible, disable all background interception */
-body.loginLocked .topNav,
-body.loginLocked .app{
-  pointer-events:none!important;
-  user-select:none!important;
-}
-body.loginLocked #loginOverlay,
-body.loginLocked #loginOverlay *{
-  pointer-events:auto!important;
-  user-select:auto!important;
-}
 
 </style>
 </head>
 <body><header class="topNav"><div class="topBrand">無限寶藏財務總覽</div><nav class="topNavLinks"><button class="topNavBtn active" data-page="dashboardPage" type="button">總覽</button><button class="topNavBtn" data-page="incomePage" type="button">收入</button><button class="topNavBtn" data-page="expensePage" type="button">支出</button><button class="topNavBtn" data-page="confirmPage" type="button">財務確認</button><button class="topNavBtn" data-page="archivePage" type="button">廠商／個人</button><button class="topNavBtn" data-page="withdrawPage" type="button">提領</button></nav><div class="topNavActions"><button class="topQuickBtn" id="topAddExpense" type="button">＋支出</button><button class="topQuickBtn primary" id="topAddIncome" type="button">＋收入</button></div></header>
 
+<div class="loginOverlay show" id="loginOverlay" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+  <form class="loginCard" id="loginForm" novalidate>
+    <h2 id="loginTitle">無限寶藏財務總覽</h2>
+    <label for="loginEmail">電子郵件</label>
+    <input id="loginEmail" name="email" type="email" inputmode="email" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+    <label for="loginPassword">密碼</label>
+    <input id="loginPassword" name="password" type="password" autocomplete="current-password" required>
+    <div class="error" id="loginError" aria-live="polite"></div>
+    <div class="status" id="loginStatus" aria-live="polite">正在載入登入服務…</div>
+    <button class="btn primary" id="loginBtn" type="submit" style="width:100%">登入</button>
+  </form>
 </div>
 <div class="app noSidebar">
 <main id="top">
@@ -616,14 +619,14 @@ body.loginLocked #loginOverlay *{
 <div class="card panel">
 <h3 style="margin-top:0">提領規則</h3>
 <div class="notice">
-      平台型收入，以及所有「已收款」的業配／品牌合作／合作案／贊助收入，都會進入「可提領池」。未收款的不會出現在這裡。<br/>
+      所有「已收款」的收入都會進入「可提領池」。未收款的不會出現在這裡。<br/>
       你可以：
       <b>① 本次提領</b> → 選帳戶後建立提領批次；
       <b>② 保留平台／製作費</b> → 從可提領池移除，但保留歷史紀錄。<br/>
       YouTube 可直接標記「保留平台／製作費」，不必提領。
     </div>
 </div>
-</div><div class="sectionhead"><h2 style="font-size:15px">可提領項目</h2><div class="sub">平台收入＋已收款業配／品牌合作／合作案／贊助</div></div><div class="card panel">
+</div><div class="sectionhead"><h2 style="font-size:15px">可提領項目</h2><div class="sub">所有已收款收入</div></div><div class="card panel">
 <div class="summarybar">
 <div><span class="mutedtext">已勾選金額</span><br/><strong id="withdrawSelectedTotal">NT$ 0</strong></div>
 <div class="actions">
@@ -646,7 +649,7 @@ body.loginLocked #loginOverlay *{
 <button id="logoutBtn"></button>
 <div id="userBox"></div>
 </div>
-<footer>無限寶藏財務總覽｜v12.2 登入輸入修正版</footer>
+<footer>無限寶藏財務總覽｜v13 手機登入穩定版</footer>
 </main>
 </div>
 <div class="modal" id="archiveModal"><div class="dialog" style="width:min(760px,96vw)">
@@ -792,7 +795,114 @@ body.loginLocked #loginOverlay *{
     }).observe(target,{childList:true,subtree:true});
   }
 })();
-</script><script type="module">
+</script>
+<script>
+/* v14 single auth UI controller — native form submit for iOS/Android/desktop */
+(function(){
+  window.__firebaseReady=false;
+  window.__firebaseInitError=null;
+  window.performLogin=null;
+
+  const form=document.getElementById('loginForm');
+  const btn=document.getElementById('loginBtn');
+  const email=document.getElementById('loginEmail');
+  const password=document.getElementById('loginPassword');
+  const err=document.getElementById('loginError');
+  const status=document.getElementById('loginStatus');
+
+  function setStatus(message,type){
+    if(!status)return;
+    status.textContent=message||'';
+    status.className='status'+(type?' '+type:'');
+  }
+  window.setLoginStatus=setStatus;
+
+  function setError(message){
+    if(err) err.textContent=message||'';
+  }
+
+  function setBusy(busy){
+    if(!btn)return;
+    btn.disabled=!!busy;
+    btn.textContent=busy?'登入中…':'登入';
+  }
+
+  function friendlyAuthError(e){
+    const code=e && e.code ? String(e.code) : '';
+    if(code==='auth/network-request-failed'){
+      return '登入連線失敗（auth/network-request-failed）。請切換 Wi‑Fi／行動網路後再試；若使用 VPN、廣告阻擋或私人 DNS，請暫時關閉。';
+    }
+    if(code==='auth/invalid-credential' || code==='auth/wrong-password' || code==='auth/user-not-found'){
+      return '電子郵件或密碼不正確。';
+    }
+    if(code==='auth/too-many-requests'){
+      return '登入嘗試次數過多，請稍後再試。';
+    }
+    return '登入失敗：'+((e && e.message) ? e.message : String(e));
+  }
+
+  async function submitLogin(event){
+    if(event) event.preventDefault();
+    setError('');
+
+    const emailValue=(email?.value||'').trim();
+    const passwordValue=password?.value||'';
+    if(!emailValue || !passwordValue){
+      setError('請輸入電子郵件與密碼');
+      return false;
+    }
+
+    if(window.__firebaseInitError){
+      setError('登入服務初始化失敗：'+window.__firebaseInitError);
+      setStatus('請重新整理頁面後再試。','bad');
+      return false;
+    }
+
+    if(!window.__firebaseReady || typeof window.performLogin!=='function'){
+      setError('登入服務尚未完成載入，請稍等 1～2 秒後再按登入。');
+      setStatus(navigator.onLine===false?'目前瀏覽器顯示為離線。':'Firebase 登入服務仍在載入。','bad');
+      return false;
+    }
+
+    setBusy(true);
+    setStatus('正在連線 Firebase…');
+    try{
+      await window.performLogin(emailValue,passwordValue);
+      setStatus('登入成功，正在讀取資料…','ok');
+    }catch(e){
+      console.error('Firebase login failed',e);
+      setError(friendlyAuthError(e));
+      setStatus('網站：'+location.hostname+'｜網路：'+(navigator.onLine===false?'離線':'連線中'),'bad');
+    }finally{
+      setBusy(false);
+    }
+    return false;
+  }
+
+  // One and only one login event path: native form submit.
+  if(form) form.addEventListener('submit',submitLogin);
+
+  // Keep fields explicitly interactive for mobile WebKit.
+  [email,password].forEach(function(el){
+    if(!el)return;
+    el.disabled=false;
+    el.readOnly=false;
+    el.tabIndex=0;
+  });
+
+  window.addEventListener('online',()=>{
+    if(window.__firebaseReady) setStatus('網路已恢復，登入服務已就緒。','ok');
+  });
+  window.addEventListener('offline',()=>setStatus('目前裝置離線，無法登入。','bad'));
+
+  setTimeout(function(){
+    if(!window.__firebaseReady && !window.__firebaseInitError){
+      setStatus('Firebase 登入服務尚未載入完成，請重新整理頁面；若持續發生，請更換網路後再試。','bad');
+    }
+  },8000);
+})();
+</script>
+<script type="module">
 
 window.openModal = function(id){
   const el = document.getElementById(id);
@@ -824,9 +934,21 @@ const firebaseConfig = {
   measurementId: "G-F6ETE6E64M"
 };
 
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
+let app, auth, db;
+try{
+  app=initializeApp(firebaseConfig);
+  auth=getAuth(app);
+  db=getFirestore(app);
+  window.performLogin=(email,password)=>signInWithEmailAndPassword(auth,email,password);
+  window.__firebaseReady=true;
+  window.setLoginStatus?.('登入服務已就緒','ok');
+}catch(e){
+  window.__firebaseInitError=e?.message||String(e);
+  window.setLoginStatus?.('登入服務初始化失敗','bad');
+  const le=document.getElementById('loginError');
+  if(le) le.textContent='Firebase 初始化失敗：'+window.__firebaseInitError;
+  throw e;
+}
 
 let incomes=[], expenses=[], accounts=[], withdrawalHistory=[], archives=[], unsubI=null, unsubE=null, unsubA=null, unsubW=null, unsubAr=null, editingIncomeId=null, editingExpenseId=null, editingAccountId=null, editingArchiveId=null;
 const $=id=>document.getElementById(id);
@@ -839,7 +961,8 @@ function isSponsorshipIncome(x){
   return sponsorshipTypes.includes(t) || /業配|品牌合作|合作案|贊助/.test(t);
 }
 function isWithdrawEligibleIncome(x){
-  return (isPlatformIncome(x) || isSponsorshipIncome(x)) && x.paid==='已收款';
+  // 所有已收款收入都進入可提領池；是否提領或保留，再由提領頁決定。
+  return x.paid==='已收款';
 }
 
 function formatTimestamp(ts){
@@ -954,24 +1077,27 @@ function subscribe(){
   },err=>{$('expenseBody').innerHTML=`<tr><td colspan="16" class="empty">讀取失敗：${err.message}</td></tr>`});
 }
 
-$('loginBtn').addEventListener('click',async()=>{
-  $('loginError').textContent='';
-  try{await signInWithEmailAndPassword(auth,$('loginEmail').value.trim(),$('loginPassword').value)}
-  catch(e){$('loginError').textContent='登入失敗：'+e.message}
-});
-$('loginPassword').addEventListener('keydown',e=>{if(e.key==='Enter')$('loginBtn').click()});
 $('logoutBtn').addEventListener('click',()=>signOut(auth));
 onAuthStateChanged(auth,user=>{
   if(user){
     $('loginOverlay').classList.remove('show');
+    window.setLoginStatus?.('登入成功','ok');
+    $('loginError').textContent='';
     $('userBox').textContent='';
     subscribe();
   }else{
     if(unsubI)unsubI(); if(unsubE)unsubE(); if(unsubA)unsubA(); if(unsubW)unsubW(); if(unsubAr)unsubAr();
+    unsubI=unsubE=unsubA=unsubW=unsubAr=null;
     incomes=[];expenses=[];accounts=[];withdrawalHistory=[];archives=[];renderAll();renderWithdrawals();
     $('userBox').textContent='';
     $('loginOverlay').classList.add('show');
+    window.setLoginStatus?.('登入服務已就緒','ok');
   }
+},err=>{
+  window.__firebaseInitError=err?.message||String(err);
+  $('loginOverlay').classList.add('show');
+  $('loginError').textContent='登入狀態讀取失敗：'+window.__firebaseInitError;
+  window.setLoginStatus?.('登入服務發生錯誤','bad');
 });
 
 function calcPair(netId,taxId,grossId,rateId,source){
@@ -1095,7 +1221,7 @@ $('saveIncomeBtn').addEventListener('click',async()=>{
     if(editingIncomeId){
       await updateDoc(doc(db,'incomes',editingIncomeId),{...payload,updatedBy:u.email,updatedByUid:u.uid,updatedAt:serverTimestamp()});
     }else{
-      await addDoc(collection(db,'incomes'),{...payload,fundDisposition:(isPlatformIncome(payload)||isSponsorshipIncome(payload))?'可提領':'不適用',createdBy:u.email,createdByUid:u.uid,createdAt:serverTimestamp(),updatedBy:'',updatedAt:null});
+      await addDoc(collection(db,'incomes'),{...payload,fundDisposition:'可提領',createdBy:u.email,createdByUid:u.uid,createdAt:serverTimestamp(),updatedBy:'',updatedAt:null});
     }
     closeModal('incomeModal');resetIncomeForm();
   }catch(e){alert('收入儲存失敗：'+e.message)}
@@ -1218,7 +1344,7 @@ window.renderWithdrawals=function(){
   </div>`).join(''):'<div class="empty">尚未建立帳戶資料</div>';
   $('withdrawAccountSelect').innerHTML='<option value="">選擇提領帳戶</option>'+activeAccounts.map(a=>`<option value="${a.id}">${a.owner}｜${a.bank}｜${a.name||''} ${a.number||''}</option>`).join('');
 
-  const eligible=incomes.filter(x=>isWithdrawEligibleIncome(x) && (x.fundDisposition===undefined || x.fundDisposition==='可提領'));
+  const eligible=incomes.filter(x=>isWithdrawEligibleIncome(x) && x.fundDisposition!=='已提領' && x.fundDisposition!=='保留平台');
   $('withdrawableBody').innerHTML=eligible.length?eligible.map(x=>`<tr>
     <td class="checkcell"><input type="checkbox" class="withdrawCheck" value="${x.id}" data-amount="${Number(x.gross||0)}"></td>
     <td>${x.date||'—'}</td><td>${x.type}</td><td>${x.company||x.project||x.client||'—'}</td>
@@ -1338,29 +1464,6 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 
-<script>
-(function(){
-  function syncLoginLock(){
-    const overlay=document.getElementById('loginOverlay');
-    document.body.classList.toggle('loginLocked', !!overlay && overlay.classList.contains('show'));
-  }
-  document.addEventListener('DOMContentLoaded',()=>{
-    syncLoginLock();
-    const overlay=document.getElementById('loginOverlay');
-    if(overlay){
-      new MutationObserver(syncLoginLock).observe(overlay,{attributes:true,attributeFilter:['class']});
-    }
-    const email=document.getElementById('loginEmail');
-    const password=document.getElementById('loginPassword');
-    [email,password].forEach(el=>{
-      if(!el)return;
-      el.removeAttribute('disabled');
-      el.removeAttribute('readonly');
-      el.tabIndex=0;
-    });
-  });
-})();
-</script>
 
 </body>
 </html>
