@@ -547,7 +547,7 @@ body.modalOpen{overflow:hidden!important}
 
 <div class="app noSidebar">
 <main id="top">
-<div class="firebaseStatus" id="firebaseStatus">v14.5 已載入<small>準備啟動 Firebase</small></div>
+<div class="firebaseStatus" id="firebaseStatus">v14.6 已載入<small>準備啟動 Firebase</small></div>
 <section class="pageView active" id="dashboardPage"><div class="dashboardHero">
 <div>
 <h1>無限寶藏財務總覽 ✦</h1>
@@ -597,7 +597,7 @@ body.modalOpen{overflow:hidden!important}
     <option value="10">10 月</option><option value="11">11 月</option><option value="12">12 月</option>
   </select>
 </div><div class="subTabs" data-for="expensePage"><button class="subTab active" data-filter="all" type="button">全部</button><button class="subTab" data-filter="unpaid" type="button">待付款</button><button class="subTab" data-filter="paid" type="button">已付款</button><button class="subTab" data-filter="advance" type="button">成員代墊</button><button class="subTab" data-filter="incomplete" type="button">待補資料</button></div><div class="sectionhead legacySectionHead" id="expense"><h2>支出管理</h2><button class="btn primary" onclick="resetExpenseForm();openModal('expenseModal')">＋新增支出</button></div><div class="card tablebox desktopTable"><div class="scroll"><table><thead><tr><th>日期</th><th>類型</th><th>收款人／廠商</th><th>對象</th><th>憑證</th><th>專案</th><th>未稅</th><th>稅額</th><th>含稅</th><th>付款</th><th>付款人／代墊</th><th>勞報</th><th>發票／收據</th><th>負責人</th><th>資料齊全</th><th>操作</th></tr></thead><tbody id="expenseBody"><tr><td class="empty" colspan="18">登入後讀取資料...</td></tr></tbody></table></div></div><div class="mobileCards" id="expenseCards"></div></section>
-<section class="pageView" id="archivePage"><div class="pageHeader"><div><h1>廠商／個人資料庫</h1><p>常用付款對象集中管理，新增支出時可直接帶入。</p></div></div><div class="sectionhead legacySectionHead" id="archive"><h2>廠商／個人資料庫</h2><button class="btn primary" onclick="resetArchiveForm();openModal('archiveModal')">＋新增歸檔</button></div><div class="card panel">
+<section class="pageView" id="archivePage"><div class="pageHeader"><div><h1>廠商／個人資料庫</h1><p>常用付款對象集中管理，新增支出時可直接帶入。</p></div><button class="btn primary" type="button" onclick="resetArchiveForm();openModal('archiveModal')">＋新增廠商／個人</button></div><div class="sectionhead legacySectionHead" id="archive"><h2>廠商／個人資料庫</h2><button class="btn primary" onclick="resetArchiveForm();openModal('archiveModal')">＋新增歸檔</button></div><div class="card panel">
 <div class="notice">常用付款對象集中在這裡。新增支出時可直接選取，不用重打名稱、統編、銀行、戶名、帳號與常用憑證。</div>
 <div class="filters" style="margin-top:12px">
 <select class="field" id="archiveTypeFilter" onchange="renderArchive()"><option value="all">全部類型</option><option value="公司">公司／廠商</option><option value="個人">個人戶</option></select>
@@ -643,7 +643,7 @@ body.modalOpen{overflow:hidden!important}
 <button id="exportBtn"></button>
 <div id="userBox"></div>
 </div>
-<footer>無限寶藏財務總覽｜v14.5 手機無限迴圈根治版</footer>
+<footer>無限寶藏財務總覽｜v14.6 廠商資料庫同步版</footer>
 </main>
 </div>
 <div class="modal" id="archiveModal"><div class="dialog" style="width:min(760px,96vw)">
@@ -699,7 +699,7 @@ body.modalOpen{overflow:hidden!important}
 <div><label>發生日期</label><input id="eDate" type="date"/></div>
 <div><label>支出類型</label><select id="eType"><option>剪輯</option><option>錄音室</option><option>攝影</option><option>設計</option><option>交通</option><option>器材</option><option>來賓費</option><option>軟體</option><option>行銷</option><option>其他</option></select></div>
 <div><label>負責成員</label><select id="eOwner"><option>寶儀</option><option>小白</option><option>靖晏</option><option>阿牛</option></select></div>
-<div><label>從歸檔帶入</label><select id="eArchiveSelect"><option value="">手動輸入</option></select></div><div><label>收款人／廠商</label><input id="ePayee"/></div><div><label>對象</label><select id="eParty"><option>公司</option><option>個人</option><option>成員代墊</option></select></div><div><label>統編／識別</label><input id="eId"/></div>
+<div><label>從廠商／個人資料庫帶入</label><select id="eArchiveSelect"><option value="">手動輸入</option></select><small style="display:block;margin-top:5px;color:var(--muted)">選擇後自動帶入名稱、統編、憑證與匯款資料</small></div><div><label>收款人／廠商</label><input id="ePayee"/></div><div><label>對象</label><select id="eParty"><option>公司</option><option>個人</option><option>成員代墊</option></select></div><div><label>統編／識別</label><input id="eId"/></div>
 <div><label>專案／集數</label><input id="eProject"/></div>
 <div><label>稅率</label><select id="eRate"><option value="0.05">5%</option><option value="0">0%</option></select></div>
 <div><label>未稅金額</label><input id="eNet" type="number" value="0"/></div>
@@ -1093,7 +1093,10 @@ function subscribe(){
   });
 
   unsubAr=onSnapshot(collection(db,'archives'),snap=>{
-    archives=snap.docs.map(d=>({id:d.id,...d.data()})); renderArchive(); markLoaded('廠商／個人',archives.length);
+    archives=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderArchive();
+    renderArchiveSelect();
+    markLoaded('廠商／個人',archives.length);
   },err=>{
     const msg=showReadError('廠商／個人',err);
     if($('archiveCards')) $('archiveCards').innerHTML=`<div class="mobileEmpty">廠商／個人讀取失敗：${msg}</div>`;
@@ -1143,9 +1146,11 @@ window.resetIncomeForm=function(){
 window.resetIncomeForm=resetIncomeForm;
 window.resetExpenseForm=function(){
   editingExpenseId=null;
+  if(typeof renderArchiveSelect==='function') renderArchiveSelect();
   $('expenseModalTitle').textContent='新增支出';
   $('saveExpenseBtn').textContent='儲存';
   ['ePayee','eId','eProject','eNote'].forEach(id=>$(id).value='');
+  if($('eArchiveSelect')) $('eArchiveSelect').value='';
   $('eNet').value=0;$('eTax').value=0;$('eGross').value=0;
   $('eType').value='剪輯';$('eOwner').value='寶儀';$('eParty').value='公司';$('eRate').value='0.05';
   $('ePaid').value='未付款';$('ePayer').value='公司';$('eVoucher').value='發票';$('eLabor').value='不適用';$('eInvoice').value='待取得';$('eAccounting').value='待處理';
@@ -1166,6 +1171,8 @@ window.editIncome=function(id){
 }
 window.editExpense=function(id){
   const x=expenses.find(v=>v.id===id); if(!x)return;
+  if(typeof renderArchiveSelect==='function') renderArchiveSelect();
+  if($('eArchiveSelect')) $('eArchiveSelect').value='';
   editingExpenseId=id;
   $('expenseModalTitle').textContent='編輯支出';
   $('saveExpenseBtn').textContent='儲存修改';
@@ -1313,7 +1320,10 @@ window.renderArchive=function(){
     <small>${a.taxId?`統編：${a.taxId}｜`:''}${a.bank||'—'} ${a.accountNumber||''}</small>
     <small>${a.voucher||'—'}${a.expenseType?`｜${a.expenseType}`:''}</small>
     <div style="margin-top:8px"><button class="btn edit" onclick="editArchive('${a.id}')">編輯</button> <button class="btn delete" onclick="removeArchive('${a.id}')">刪除</button></div>
-  </div>`).join(''):'<div class="empty">尚未建立付款對象歸檔</div>';
+  </div>`).join(''):`<div class="empty">
+    <div style="margin-bottom:12px">尚未建立付款對象歸檔</div>
+    <button class="btn primary" type="button" onclick="resetArchiveForm();openModal('archiveModal')">＋建立第一筆廠商／個人</button>
+  </div>`;
 }
 function renderArchiveSelect(){
   if(!$('eArchiveSelect'))return;
