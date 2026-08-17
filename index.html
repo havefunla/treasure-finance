@@ -547,7 +547,7 @@ body.modalOpen{overflow:hidden!important}
 
 <div class="app noSidebar">
 <main id="top">
-<div class="firebaseStatus" id="firebaseStatus">正在連線 Firestore…<small>讀取收入、支出、帳戶、提領與廠商資料</small></div>
+<div class="firebaseStatus" id="firebaseStatus">v14.4 已載入<small>準備啟動 Firebase</small></div>
 <section class="pageView active" id="dashboardPage"><div class="dashboardHero">
 <div>
 <h1>無限寶藏財務總覽 ✦</h1>
@@ -643,7 +643,7 @@ body.modalOpen{overflow:hidden!important}
 <button id="exportBtn"></button>
 <div id="userBox"></div>
 </div>
-<footer>無限寶藏財務總覽｜v14.3 手機連線強化版</footer>
+<footer>無限寶藏財務總覽｜v14.4 Firebase 雙 CDN 修正版</footer>
 </main>
 </div>
 <div class="modal" id="archiveModal"><div class="dialog" style="width:min(760px,96vw)">
@@ -803,12 +803,8 @@ window.__firebaseSdkLoadError = function(name){
   else show();
 };
 </script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"
-        onerror="window.__firebaseSdkLoadError('firebase-app-compat.js')"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"
-        onerror="window.__firebaseSdkLoadError('firebase-firestore-compat.js')"></script>
 <script>
-
+function __startFinanceApp(){
 window.openModal = function(id){
   const el = document.getElementById(id);
   if(!el) return;
@@ -823,18 +819,6 @@ window.closeModal = function(id){
     document.body.classList.remove('modalOpen');
   }
 };
-
-
-// v14.2：改用 Firebase compat SDK，避免部分手機瀏覽器 ES Module 載入卡住。
-if (typeof firebase === 'undefined' || !firebase.initializeApp || !firebase.firestore) {
-  const statusEl = document.getElementById('firebaseStatus');
-  if (statusEl) {
-    statusEl.className = 'firebaseStatus bad';
-    statusEl.innerHTML = 'Firebase SDK 未成功啟動<small>請重新整理頁面；若仍發生，請切換 Wi‑Fi／行動網路再試。</small>';
-  }
-  throw new Error('Firebase compat SDK unavailable');
-}
-
 const initializeApp = (config) => firebase.apps.length ? firebase.app() : firebase.initializeApp(config);
 const getFirestore = () => firebase.firestore();
 const collection = (db, name) => db.collection(name);
@@ -1473,7 +1457,98 @@ $('exportBtn').addEventListener('click',()=>{
  let csv='\ufeff'+rows.map(r=>r.map(v=>`"${String(v??'').replaceAll('"','""')}"`).join(',')).join('\n');
  let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='無限寶藏_會計資料.csv';a.click();
 });
+}
 </script>
+
+<script>
+(function(){
+  function statusEl(){ return document.getElementById('firebaseStatus'); }
+
+  function setStatus(title, detail, bad){
+    const el = statusEl();
+    if(!el) return;
+    el.className = bad ? 'firebaseStatus bad' : 'firebaseStatus';
+    el.innerHTML = title + (detail ? '<small>' + detail + '</small>' : '');
+  }
+
+  function loadScript(url, timeoutMs){
+    return new Promise((resolve, reject)=>{
+      const s = document.createElement('script');
+      let finished = false;
+
+      const timer = setTimeout(()=>{
+        if(finished) return;
+        finished = true;
+        s.remove();
+        reject(new Error('timeout'));
+      }, timeoutMs);
+
+      s.async = true;
+      s.src = url;
+      s.onload = ()=>{
+        if(finished) return;
+        finished = true;
+        clearTimeout(timer);
+        resolve();
+      };
+      s.onerror = ()=>{
+        if(finished) return;
+        finished = true;
+        clearTimeout(timer);
+        s.remove();
+        reject(new Error('load-error'));
+      };
+      document.head.appendChild(s);
+    });
+  }
+
+  async function loadFirebase(base){
+    await loadScript(base + '/firebase-app-compat.js', 7000);
+    await loadScript(base + '/firebase-firestore-compat.js', 7000);
+    if(typeof firebase === 'undefined' || !firebase.initializeApp || !firebase.firestore){
+      throw new Error('firebase-global-missing');
+    }
+  }
+
+  async function boot(){
+    const sources = [
+      'https://www.gstatic.com/firebasejs/10.12.5',
+      'https://cdn.jsdelivr.net/npm/firebase@10.12.5'
+    ];
+
+    setStatus('正在載入 Firebase…','Google CDN',false);
+
+    let lastError = null;
+    for(let i=0;i<sources.length;i++){
+      try{
+        if(i===1){
+          setStatus('Google CDN 無回應，切換備援…','jsDelivr CDN',false);
+        }
+        await loadFirebase(sources[i]);
+        setStatus('Firebase SDK 已載入 ✓','正在啟動 Firestore',false);
+        window.__startFinanceApp();
+        return;
+      }catch(err){
+        console.warn('Firebase CDN failed', sources[i], err);
+        lastError = err;
+      }
+    }
+
+    setStatus(
+      'Firebase SDK 載入失敗',
+      'Google CDN 與備援 CDN 都失敗：' + (lastError?.message || 'unknown'),
+      true
+    );
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', boot, {once:true});
+  }else{
+    boot();
+  }
+})();
+</script>
+
 <script>
 document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.topNavBtn').forEach(btn=>{
