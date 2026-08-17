@@ -541,13 +541,130 @@ body.modalOpen{overflow:hidden!important}
 .firebaseStatus.ok{background:var(--green2);color:var(--green)}
 .firebaseStatus.bad{background:var(--red2);color:var(--red)}
 .firebaseStatus small{display:block;margin-top:3px;font-weight:500;overflow-wrap:anywhere}
+
+/* v14.7 mobile modal layout fix */
+@media(max-width:760px){
+  .modal{
+    padding:0!important;
+    align-items:flex-end!important;
+    justify-content:center!important;
+    overflow:hidden!important;
+  }
+
+  .modal .dialog{
+    width:100%!important;
+    max-width:100%!important;
+    height:min(88dvh,760px)!important;
+    max-height:calc(100dvh - max(10px, env(safe-area-inset-top)))!important;
+    margin:0!important;
+    border-radius:22px 22px 0 0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    overflow:hidden!important;
+  }
+
+  .modal .dialoghead{
+    position:relative!important;
+    top:auto!important;
+    flex:0 0 auto!important;
+    padding:16px 18px!important;
+    min-height:68px!important;
+    background:var(--card)!important;
+  }
+
+  .modal .dialoghead b{
+    font-size:18px!important;
+    line-height:1.3!important;
+  }
+
+  .modal .dialoghead .btn{
+    width:auto!important;
+    min-width:72px!important;
+    flex:0 0 auto!important;
+  }
+
+  .modal .dialogbody{
+    position:relative!important;
+    flex:1 1 auto!important;
+    min-height:0!important;
+    width:100%!important;
+    padding:16px 18px 24px!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior:contain;
+  }
+
+  .modal .formgrid{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:14px!important;
+    width:100%!important;
+  }
+
+  .modal .formgrid > div,
+  .modal .formgrid .full{
+    grid-column:1/-1!important;
+    width:100%!important;
+    min-width:0!important;
+  }
+
+  .modal .formgrid label{
+    margin-bottom:6px!important;
+    font-size:13px!important;
+  }
+
+  .modal .formgrid input,
+  .modal .formgrid select,
+  .modal .formgrid textarea{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    min-height:46px!important;
+    padding:11px 12px!important;
+    border-radius:11px!important;
+    font-size:16px!important;
+    line-height:1.3!important;
+  }
+
+  .modal .formgrid textarea{
+    min-height:88px!important;
+    resize:vertical!important;
+  }
+
+  .modal .dialogfoot{
+    position:relative!important;
+    bottom:auto!important;
+    flex:0 0 auto!important;
+    padding:12px 18px calc(12px + env(safe-area-inset-bottom))!important;
+    background:var(--card)!important;
+    display:flex!important;
+    justify-content:flex-end!important;
+    gap:10px!important;
+    box-shadow:0 -8px 20px rgba(50,35,20,.05)!important;
+  }
+
+  .modal .dialogfoot .btn{
+    width:auto!important;
+    min-width:84px!important;
+    min-height:44px!important;
+    flex:0 0 auto!important;
+  }
+
+  /* Archive modal is the longest form: give it nearly full screen height */
+  #archiveModal .dialog{
+    height:calc(100dvh - max(12px, env(safe-area-inset-top)))!important;
+    max-height:calc(100dvh - max(12px, env(safe-area-inset-top)))!important;
+  }
+}
+
 </style>
 </head>
 <body><header class="topNav"><div class="topBrand">無限寶藏財務總覽</div><nav class="topNavLinks"><button class="topNavBtn active" data-page="dashboardPage" type="button">總覽</button><button class="topNavBtn" data-page="incomePage" type="button">收入</button><button class="topNavBtn" data-page="expensePage" type="button">支出</button><button class="topNavBtn" data-page="confirmPage" type="button">財務確認</button><button class="topNavBtn" data-page="archivePage" type="button">廠商／個人</button><button class="topNavBtn" data-page="withdrawPage" type="button">提領</button></nav><div class="topNavActions"><button class="topQuickBtn" id="topAddExpense" type="button">＋支出</button><button class="topQuickBtn primary" id="topAddIncome" type="button">＋收入</button></div></header>
 
 <div class="app noSidebar">
 <main id="top">
-<div class="firebaseStatus" id="firebaseStatus">v14.6 已載入<small>準備啟動 Firebase</small></div>
+<div class="firebaseStatus" id="firebaseStatus">v14.7 已載入<small>準備啟動 Firebase</small></div>
 <section class="pageView active" id="dashboardPage"><div class="dashboardHero">
 <div>
 <h1>無限寶藏財務總覽 ✦</h1>
@@ -643,7 +760,7 @@ body.modalOpen{overflow:hidden!important}
 <button id="exportBtn"></button>
 <div id="userBox"></div>
 </div>
-<footer>無限寶藏財務總覽｜v14.6 廠商資料庫同步版</footer>
+<footer>無限寶藏財務總覽｜v14.7 手機表單版型修正版</footer>
 </main>
 </div>
 <div class="modal" id="archiveModal"><div class="dialog" style="width:min(760px,96vw)">
