@@ -539,18 +539,6 @@ body.modalOpen{overflow:hidden!important}
 </head>
 <body><header class="topNav"><div class="topBrand">無限寶藏財務總覽</div><nav class="topNavLinks"><button class="topNavBtn active" data-page="dashboardPage" type="button">總覽</button><button class="topNavBtn" data-page="incomePage" type="button">收入</button><button class="topNavBtn" data-page="expensePage" type="button">支出</button><button class="topNavBtn" data-page="confirmPage" type="button">財務確認</button><button class="topNavBtn" data-page="archivePage" type="button">廠商／個人</button><button class="topNavBtn" data-page="withdrawPage" type="button">提領</button></nav><div class="topNavActions"><button class="topQuickBtn" id="topAddExpense" type="button">＋支出</button><button class="topQuickBtn primary" id="topAddIncome" type="button">＋收入</button></div></header>
 
-<div class="loginOverlay show" id="loginOverlay" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
-  <form class="loginCard" id="loginForm" novalidate>
-    <h2 id="loginTitle">無限寶藏財務總覽</h2>
-    <label for="loginEmail">電子郵件</label>
-    <input id="loginEmail" name="email" type="email" inputmode="email" autocomplete="username" autocapitalize="none" spellcheck="false" required>
-    <label for="loginPassword">密碼</label>
-    <input id="loginPassword" name="password" type="password" autocomplete="current-password" required>
-    <div class="error" id="loginError" aria-live="polite"></div>
-    <div class="status" id="loginStatus" aria-live="polite">正在載入登入服務…</div>
-    <button class="btn primary" id="loginBtn" type="submit" style="width:100%">登入</button>
-  </form>
-</div>
 <div class="app noSidebar">
 <main id="top">
 <section class="pageView active" id="dashboardPage"><div class="dashboardHero">
