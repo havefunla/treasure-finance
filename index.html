@@ -535,12 +535,19 @@ body.modalOpen{overflow:hidden!important}
 }
 
 
+
+/* v14.1 Firestore connection status */
+.firebaseStatus{margin:0 0 14px;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--amber2);color:#7A6219;font-size:12px;line-height:1.5;font-weight:750}
+.firebaseStatus.ok{background:var(--green2);color:var(--green)}
+.firebaseStatus.bad{background:var(--red2);color:var(--red)}
+.firebaseStatus small{display:block;margin-top:3px;font-weight:500;overflow-wrap:anywhere}
 </style>
 </head>
 <body><header class="topNav"><div class="topBrand">無限寶藏財務總覽</div><nav class="topNavLinks"><button class="topNavBtn active" data-page="dashboardPage" type="button">總覽</button><button class="topNavBtn" data-page="incomePage" type="button">收入</button><button class="topNavBtn" data-page="expensePage" type="button">支出</button><button class="topNavBtn" data-page="confirmPage" type="button">財務確認</button><button class="topNavBtn" data-page="archivePage" type="button">廠商／個人</button><button class="topNavBtn" data-page="withdrawPage" type="button">提領</button></nav><div class="topNavActions"><button class="topQuickBtn" id="topAddExpense" type="button">＋支出</button><button class="topQuickBtn primary" id="topAddIncome" type="button">＋收入</button></div></header>
 
 <div class="app noSidebar">
 <main id="top">
+<div class="firebaseStatus" id="firebaseStatus">正在連線 Firestore…<small>讀取收入、支出、帳戶、提領與廠商資料</small></div>
 <section class="pageView active" id="dashboardPage"><div class="dashboardHero">
 <div>
 <h1>無限寶藏財務總覽 ✦</h1>
@@ -636,7 +643,7 @@ body.modalOpen{overflow:hidden!important}
 <button id="exportBtn"></button>
 <div id="userBox"></div>
 </div>
-<footer>無限寶藏財務總覽｜v14 無登入直達版</footer>
+<footer>無限寶藏財務總覽｜v14.1 Firestore 讀取修正版</footer>
 </main>
 </div>
 <div class="modal" id="archiveModal"><div class="dialog" style="width:min(760px,96vw)">
@@ -802,7 +809,7 @@ window.closeModal = function(id){
 
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp, query, orderBy, writeBatch } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBdmR8UPcP-I25f4N5lp2cSrxWTlmpHFeA",
@@ -938,21 +945,66 @@ window.renderAll=function(){
 }
 function subscribe(){
   if(unsubI)unsubI(); if(unsubE)unsubE(); if(unsubA)unsubA(); if(unsubW)unsubW(); if(unsubAr)unsubAr();
-  unsubI=onSnapshot(query(collection(db,'incomes'),orderBy('createdAt','desc')),snap=>{
-    incomes=snap.docs.map(d=>({id:d.id,...d.data()}));renderAll();
-  },err=>{$('incomeBody').innerHTML=`<tr><td colspan="16" class="empty">讀取失敗：${err.message}</td></tr>`});
-  unsubE=onSnapshot(query(collection(db,'expenses'),orderBy('createdAt','desc')),snap=>{
-    expenses=snap.docs.map(d=>({id:d.id,...d.data()}));renderAll();
-  },err=>{$('expenseBody').innerHTML=`<tr><td colspan="16" class="empty">讀取失敗：${err.message}</td></tr>`});
-  unsubA=onSnapshot(query(collection(db,'accounts'),orderBy('createdAt','desc')),snap=>{
-    accounts=snap.docs.map(d=>({id:d.id,...d.data()}));renderWithdrawals();
-  },err=>{console.error('accounts read failed',err);});
-  unsubW=onSnapshot(query(collection(db,'withdrawals'),orderBy('createdAt','desc')),snap=>{
-    withdrawalHistory=snap.docs.map(d=>({id:d.id,...d.data()}));renderWithdrawals();
-  },err=>{console.error('withdrawals read failed',err);});
-  unsubAr=onSnapshot(query(collection(db,'archives'),orderBy('createdAt','desc')),snap=>{
-    archives=snap.docs.map(d=>({id:d.id,...d.data()}));renderArchive();
-  },err=>{console.error('archives read failed',err);});
+
+  const status=$('firebaseStatus');
+  const loaded=new Set();
+  const markLoaded=(name,count)=>{
+    loaded.add(name);
+    if(status){
+      status.className='firebaseStatus ok';
+      status.innerHTML=`Firestore 已連線 ✓<small>已讀取 ${loaded.size}/5 個資料區；${name} ${count} 筆</small>`;
+      if(loaded.size===5) status.innerHTML='Firestore 已連線 ✓<small>收入、支出、帳戶、提領與廠商資料皆已完成同步</small>';
+    }
+  };
+  const showReadError=(name,err)=>{
+    console.error(name+' read failed',err);
+    const msg=`${err.code||'unknown'}｜${err.message||err}`;
+    if(status){
+      status.className='firebaseStatus bad';
+      status.innerHTML=`Firestore 讀取失敗：${name}<small>${msg}</small>`;
+    }
+    return msg;
+  };
+
+  // v14.1：直接監聽完整 collection，不用 createdAt 排序，避免舊資料因缺少 createdAt 而被排除。
+  unsubI=onSnapshot(collection(db,'incomes'),snap=>{
+    incomes=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+    renderAll(); markLoaded('收入',incomes.length);
+  },err=>{
+    const msg=showReadError('收入',err);
+    $('incomeBody').innerHTML=`<tr><td colspan="16" class="empty">讀取失敗：${msg}</td></tr>`;
+    if($('incomeCards')) $('incomeCards').innerHTML=`<div class="mobileEmpty">收入讀取失敗：${msg}</div>`;
+  });
+
+  unsubE=onSnapshot(collection(db,'expenses'),snap=>{
+    expenses=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+    renderAll(); markLoaded('支出',expenses.length);
+  },err=>{
+    const msg=showReadError('支出',err);
+    $('expenseBody').innerHTML=`<tr><td colspan="16" class="empty">讀取失敗：${msg}</td></tr>`;
+    if($('expenseCards')) $('expenseCards').innerHTML=`<div class="mobileEmpty">支出讀取失敗：${msg}</div>`;
+  });
+
+  unsubA=onSnapshot(collection(db,'accounts'),snap=>{
+    accounts=snap.docs.map(d=>({id:d.id,...d.data()})); renderWithdrawals(); markLoaded('帳戶',accounts.length);
+  },err=>{
+    const msg=showReadError('帳戶',err);
+    if($('accountCards')) $('accountCards').innerHTML=`<div class="mobileEmpty">帳戶讀取失敗：${msg}</div>`;
+  });
+
+  unsubW=onSnapshot(collection(db,'withdrawals'),snap=>{
+    withdrawalHistory=snap.docs.map(d=>({id:d.id,...d.data()})); renderWithdrawals(); markLoaded('提領紀錄',withdrawalHistory.length);
+  },err=>{
+    const msg=showReadError('提領紀錄',err);
+    if($('withdrawHistoryCards')) $('withdrawHistoryCards').innerHTML=`<div class="mobileEmpty">提領紀錄讀取失敗：${msg}</div>`;
+  });
+
+  unsubAr=onSnapshot(collection(db,'archives'),snap=>{
+    archives=snap.docs.map(d=>({id:d.id,...d.data()})); renderArchive(); markLoaded('廠商／個人',archives.length);
+  },err=>{
+    const msg=showReadError('廠商／個人',err);
+    if($('archiveCards')) $('archiveCards').innerHTML=`<div class="mobileEmpty">廠商／個人讀取失敗：${msg}</div>`;
+  });
 }
 
 // 無登入版：Firebase 初始化完成後直接讀取資料。
