@@ -3167,6 +3167,569 @@ input[type="checkbox"]:focus-visible{
   gap:7px!important;
 }
 
+
+/* V15.7.8 FILTER + MOBILE UX POLISH */
+.pageHeader{display:flex!important;align-items:flex-end!important;justify-content:space-between!important;gap:24px!important;min-height:92px!important;margin-bottom:28px!important}
+.pageHeader>div:first-child{min-width:0!important}.pageHeader h1{margin:0!important}.pageHeader p{margin:8px 0 0!important}.pageAddBtn{margin:0!important;align-self:flex-end!important}
+.linkedPeriod{margin:0 0 22px!important}.linkedPeriodLabel{margin-right:10px!important}.linkedPeriod .field{margin-right:4px!important}
+
+/* Clear segmented status control */
+.subTabs{display:inline-flex!important;align-items:center!important;gap:4px!important;width:auto!important;max-width:100%!important;margin:0 0 20px!important;padding:4px!important;border:0!important;border-radius:12px!important;background:#F2EEE8!important;box-shadow:none!important}
+.subTab{min-height:38px!important;padding:0 15px!important;border:0!important;border-radius:9px!important;background:transparent!important;color:#7A726A!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;white-space:nowrap!important;line-height:1!important}
+.subTab:hover{background:rgba(255,255,255,.55)!important;color:#514B45!important}
+.subTab.active{background:#fff!important;color:#5F704F!important;border:0!important;box-shadow:0 1px 4px rgba(65,53,43,.07)!important}
+
+/* Expense is neutral/olive too — remove pink/red tint */
+#incomePage .subTabs,#expensePage .subTabs{background:#F2EEE8!important}
+#incomePage .subTab.active,#expensePage .subTab.active{background:#fff!important;color:#5F704F!important;box-shadow:0 1px 4px rgba(65,53,43,.07)!important}
+#expensePage .subTab:hover,#expensePage .subTab:focus-visible{background:#FAF8F4!important;color:#5F704F!important}
+
+/* Archive action group */
+#archivePage .pageHeader{align-items:flex-end!important}
+#archivePage .pageHeader>div:last-child{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:10px!important;flex:0 0 auto!important}
+#archivePage .pageHeader .btn{min-height:42px!important;margin:0!important;white-space:nowrap!important}
+
+@media(max-width:760px){
+ .pageHeader{display:block!important;min-height:0!important;margin-bottom:20px!important}
+ .pageHeader h1{font-size:25px!important}.pageHeader p{margin-top:6px!important;font-size:13px!important}
+ .pageHeader>.pageAddBtn{width:100%!important;margin-top:14px!important;height:42px!important}
+ .linkedPeriod{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;width:100%!important;margin-bottom:16px!important}
+ .linkedPeriodLabel{grid-column:1/-1!important;margin:0 0 -2px!important}.linkedPeriod .field{width:100%!important;min-width:0!important;margin:0!important}
+ .subTabs{display:flex!important;width:100%!important;gap:4px!important;padding:4px!important;overflow-x:auto!important;overscroll-behavior-x:contain!important;-webkit-overflow-scrolling:touch!important;scrollbar-width:none!important}
+ .subTabs::-webkit-scrollbar{display:none!important}.subTab{flex:0 0 auto!important;min-height:40px!important;padding:0 16px!important;font-size:13px!important}
+ #archivePage .pageHeader>div:last-child{display:grid!important;grid-template-columns:1fr!important;width:100%!important;gap:8px!important;margin-top:14px!important}
+ #archivePage .pageHeader>div:last-child .btn{width:100%!important;min-height:42px!important}
+ #archivePage .filters,#archivePage .toolbar,#archivePage .archiveToolbar{display:grid!important;grid-template-columns:1fr!important;width:100%!important;gap:10px!important}
+ #archivePage .filters .field,#archivePage .toolbar .field,#archivePage .archiveToolbar .field{width:100%!important;min-width:0!important}
+}
+@media(max-width:390px){.subTab{padding-left:14px!important;padding-right:14px!important}.pageHeader h1{font-size:23px!important}}
+
+
+/* =========================================================
+   V15.7.10 AESOP-INSPIRED CONSOLIDATED UI
+   Stable base: V15.7.8
+   ========================================================= */
+:root{
+  --ae-bg:#F2EEE7;
+  --ae-paper:#F8F5EF;
+  --ae-ink:#2F2A26;
+  --ae-text:#6A625B;
+  --ae-muted:#91877D;
+  --ae-line:#D8CEC2;
+  --ae-olive:#7F8D6A;
+  --ae-olive-soft:#E8EDE2;
+  --ae-brown:#9A7A63;
+  --ae-gold:#AA9162;
+}
+
+/* ---------- Canvas ---------- */
+html,body{
+  background:var(--ae-bg)!important;
+}
+body{
+  color:var(--ae-ink)!important;
+  /* Aesop-like restraint: almost flat, grid only barely perceptible */
+  background-image:
+    linear-gradient(rgba(75,62,51,.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(75,62,51,.018) 1px,transparent 1px)!important;
+  background-size:48px 48px!important;
+}
+
+/* ---------- Brand / navigation ---------- */
+.topNav{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:126px!important;
+  padding:22px 30px 14px!important;
+  gap:14px!important;
+  background:rgba(242,238,231,.97)!important;
+  border-bottom:1px solid rgba(70,58,48,.10)!important;
+}
+.topBrand{
+  font-size:30px!important;
+  line-height:1.15!important;
+  font-weight:600!important;
+  letter-spacing:.025em!important;
+  text-align:center!important;
+  color:var(--ae-ink)!important;
+}
+.topNavLinks{
+  display:flex!important;
+  justify-content:center!important;
+  align-items:center!important;
+  gap:24px!important;
+  width:auto!important;
+  margin:0!important;
+}
+.topNavBtn{
+  min-height:40px!important;
+  padding:0 12px!important;
+  border:0!important;
+  border-radius:8px!important;
+  background:transparent!important;
+  color:#756D66!important;
+  box-shadow:none!important;
+  font-size:14px!important;
+  line-height:40px!important;
+}
+.topNavBtn:hover{
+  background:#EDE8E0!important;
+  color:#4D4741!important;
+}
+.topNavBtn.active{
+  background:var(--ae-olive-soft)!important;
+  color:#59664B!important;
+  box-shadow:none!important;
+}
+.topNavBtn:after,.topNavBtn.active:after{
+  display:none!important;
+  content:none!important;
+}
+
+/* ---------- Global content axis ---------- */
+.app.noSidebar main{
+  max-width:1440px!important;
+  margin:0 auto!important;
+  padding:46px 52px 66px!important;
+}
+.pageView{
+  width:100%!important;
+}
+
+/* ---------- Title system: SAME SIZE on all pages ---------- */
+.dashboardHero,
+.pageHeader{
+  position:relative!important;
+  display:flex!important;
+  align-items:flex-end!important;
+  justify-content:space-between!important;
+  gap:28px!important;
+  min-height:0!important;
+  margin:0 0 30px!important;
+  padding:0 0 0 20px!important;
+}
+
+/* restore the small side accent, but fixed to text block height */
+.dashboardHero:before,
+.pageHeader:before{
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  left:0!important;
+  top:6px!important;
+  width:4px!important;
+  height:56px!important;
+  border-radius:2px!important;
+  background:var(--ae-olive)!important;
+}
+#expensePage .pageHeader:before{background:var(--ae-brown)!important}
+#confirmPage .pageHeader:before{background:var(--ae-gold)!important}
+#archivePage .pageHeader:before{background:#8B806F!important}
+#withdrawPage .pageHeader:before{background:#71806A!important}
+
+.dashboardHero>div,
+.pageHeader>div:first-child{
+  min-width:0!important;
+  max-width:760px!important;
+}
+.dashboardHero h1,
+.pageHeader h1,
+#withdrawPage .pageHeader h1{
+  margin:0!important;
+  font-size:32px!important;
+  line-height:1.28!important;
+  font-weight:600!important;
+  letter-spacing:.005em!important;
+  color:var(--ae-ink)!important;
+}
+.pageHeader p{
+  margin:8px 0 0!important;
+  font-size:14px!important;
+  line-height:1.65!important;
+  color:var(--ae-text)!important;
+}
+
+/* page-specific add action */
+.pageAddBtn{
+  align-self:flex-end!important;
+  min-width:118px!important;
+  height:42px!important;
+  min-height:42px!important;
+  padding:0 16px!important;
+  border-radius:7px!important;
+  font-size:14px!important;
+}
+
+/* ---------- Period: clean consistent selects ---------- */
+.linkedPeriod,
+.filters{
+  display:flex!important;
+  align-items:center!important;
+  gap:16px!important;
+  width:auto!important;
+  max-width:100%!important;
+  margin:0 0 22px!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+}
+.linkedPeriodLabel{
+  flex:0 0 auto!important;
+  min-width:52px!important;
+  margin:0!important;
+  padding:0!important;
+  font-size:13px!important;
+  line-height:44px!important;
+  font-weight:600!important;
+  color:var(--ae-text)!important;
+}
+.linkedPeriod .field,
+.filters .field{
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  width:210px!important;
+  min-width:210px!important;
+  height:44px!important;
+  min-height:44px!important;
+  padding:0 34px 0 8px!important;
+  border:0!important;
+  border-bottom:1px solid var(--ae-line)!important;
+  border-radius:0!important;
+  background-color:transparent!important;
+  background-image:
+    linear-gradient(45deg,transparent 50%,#37312D 50%),
+    linear-gradient(135deg,#37312D 50%,transparent 50%)!important;
+  background-position:
+    calc(100% - 14px) 19px,
+    calc(100% - 9px) 19px!important;
+  background-size:5px 5px,5px 5px!important;
+  background-repeat:no-repeat!important;
+  box-shadow:none!important;
+  font-size:15px!important;
+  line-height:44px!important;
+  color:var(--ae-ink)!important;
+}
+.linkedPeriod .field:hover,
+.filters .field:hover{
+  border-bottom-color:#ABA095!important;
+}
+.linkedPeriod .field:focus,
+.filters .field:focus{
+  outline:0!important;
+  border-bottom-color:var(--ae-olive)!important;
+  box-shadow:none!important;
+}
+
+/* ---------- Status filters: readable segmented control ---------- */
+.subTabs{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:5px!important;
+  width:auto!important;
+  max-width:100%!important;
+  margin:0 0 22px!important;
+  padding:4px!important;
+  border:0!important;
+  border-radius:10px!important;
+  background:#ECE6DE!important;
+  box-shadow:none!important;
+}
+.subTab{
+  flex:0 0 auto!important;
+  min-height:40px!important;
+  padding:0 17px!important;
+  border:0!important;
+  border-radius:7px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:transparent!important;
+  color:#766E67!important;
+  box-shadow:none!important;
+  white-space:nowrap!important;
+  font-size:13px!important;
+  line-height:1!important;
+  font-weight:500!important;
+}
+.subTab:hover{
+  background:rgba(248,245,239,.7)!important;
+  color:#4F4943!important;
+}
+.subTab.active,
+#incomePage .subTab.active,
+#expensePage .subTab.active{
+  background:var(--ae-paper)!important;
+  color:#59664B!important;
+  box-shadow:none!important;
+}
+.subTab:after,.subTab.active:after{
+  display:none!important;
+  content:none!important;
+}
+
+/* ---------- Buttons ---------- */
+.btn,.pageAddBtn{
+  border-radius:7px!important;
+}
+.btn.primary,.pageAddBtn{
+  background:var(--ae-olive)!important;
+  border-color:var(--ae-olive)!important;
+}
+.btn.primary:hover,.pageAddBtn:hover{
+  background:#6E7D5A!important;
+  border-color:#6E7D5A!important;
+}
+
+/* ---------- Cards / tables ---------- */
+.card,.mobileCard,.accountcard,.summarybar{
+  background:rgba(248,245,239,.94)!important;
+  border-color:rgba(80,65,53,.12)!important;
+  box-shadow:none!important;
+}
+.tablebox.card{
+  border-radius:10px!important;
+}
+.desktopTable th{
+  background:#ECE6DE!important;
+  color:#6D655E!important;
+}
+.desktopTable td{
+  background:rgba(248,245,239,.96)!important;
+}
+.desktopTable tbody tr:hover td{
+  background:#F2EEE7!important;
+}
+
+/* ---------- Archive page ---------- */
+#archivePage .pageHeader>div:last-child{
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  flex:0 0 auto!important;
+}
+#archivePage .pageHeader .btn{
+  min-height:42px!important;
+  white-space:nowrap!important;
+}
+
+/* ---------- Mobile ---------- */
+@media(max-width:760px){
+  .topNav{
+    min-height:auto!important;
+    padding:16px 16px 10px!important;
+    gap:10px!important;
+  }
+  .topBrand{
+    font-size:24px!important;
+  }
+  .topNavLinks{
+    justify-content:flex-start!important;
+    width:100%!important;
+    gap:12px!important;
+    overflow-x:auto!important;
+    scrollbar-width:none!important;
+  }
+  .topNavLinks::-webkit-scrollbar{display:none!important}
+
+  .app.noSidebar main{
+    padding:30px 18px 48px!important;
+  }
+
+  .dashboardHero,
+  .pageHeader{
+    display:block!important;
+    margin-bottom:24px!important;
+    padding-left:16px!important;
+  }
+  .dashboardHero:before,
+  .pageHeader:before{
+    top:5px!important;
+    width:3px!important;
+    height:48px!important;
+  }
+  .dashboardHero h1,
+  .pageHeader h1,
+  #withdrawPage .pageHeader h1{
+    font-size:27px!important;
+    line-height:1.3!important;
+  }
+  .pageHeader p{
+    font-size:13px!important;
+    line-height:1.65!important;
+  }
+  .pageHeader>.pageAddBtn{
+    width:100%!important;
+    margin-top:14px!important;
+  }
+
+  .linkedPeriod,
+  .filters{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:10px 14px!important;
+    width:100%!important;
+    margin-bottom:18px!important;
+  }
+  .linkedPeriodLabel{
+    grid-column:1/-1!important;
+    min-width:0!important;
+    line-height:1.4!important;
+  }
+  .linkedPeriod .field,
+  .filters .field{
+    width:100%!important;
+    min-width:0!important;
+  }
+
+  .subTabs{
+    display:flex!important;
+    width:100%!important;
+    gap:5px!important;
+    overflow-x:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+    scrollbar-width:none!important;
+  }
+  .subTabs::-webkit-scrollbar{display:none!important}
+  .subTab{
+    min-height:40px!important;
+    padding:0 16px!important;
+  }
+
+  #archivePage .pageHeader>div:last-child{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    width:100%!important;
+    gap:8px!important;
+    margin-top:14px!important;
+  }
+  #archivePage .pageHeader>div:last-child .btn{
+    width:100%!important;
+  }
+}
+
+
+/* V15.7.11 dashboard description */
+.dashboardHero p{
+  margin:8px 0 0!important;
+  max-width:620px!important;
+  font-size:14px!important;
+  line-height:1.65!important;
+  color:var(--ae-text)!important;
+}
+@media(max-width:760px){
+  .dashboardHero p{
+    font-size:13px!important;
+    line-height:1.65!important;
+  }
+}
+
+
+/* =========================================================
+   V15.7.12 PERIOD ALIGNMENT FIX
+   ========================================================= */
+.linkedPeriod,
+.filters{
+  display:grid!important;
+  grid-template-columns:72px 210px 210px!important;
+  align-items:center!important;
+  column-gap:16px!important;
+  row-gap:0!important;
+}
+
+.linkedPeriodLabel{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  height:44px!important;
+  min-height:44px!important;
+  margin:0!important;
+  padding:0!important;
+  line-height:1!important;
+}
+
+.linkedPeriod .field,
+.filters .field{
+  display:block!important;
+  height:44px!important;
+  min-height:44px!important;
+  margin:0!important;
+  padding-top:0!important;
+  padding-bottom:0!important;
+  line-height:44px!important;
+  vertical-align:middle!important;
+}
+
+/* Keep both underline positions identical */
+.linkedPeriod .field,
+.filters .field{
+  box-sizing:border-box!important;
+}
+
+/* Mobile */
+@media(max-width:760px){
+  .linkedPeriod,
+  .filters{
+    grid-template-columns:1fr 1fr!important;
+    align-items:center!important;
+    gap:10px 14px!important;
+  }
+  .linkedPeriodLabel{
+    grid-column:1/-1!important;
+    height:auto!important;
+    min-height:0!important;
+    line-height:1.4!important;
+  }
+}
+
+
+/* =========================================================
+   V15.7.13 PERIOD LABEL REMOVED
+   ========================================================= */
+
+/* Remove the period label entirely and let year/month align naturally */
+.linkedPeriodLabel{
+  display:none!important;
+}
+
+.linkedPeriod,
+.filters{
+  display:flex!important;
+  align-items:flex-end!important;
+  gap:18px!important;
+  width:auto!important;
+  max-width:100%!important;
+  margin:0 0 22px!important;
+}
+
+.linkedPeriod .field,
+.filters .field{
+  width:210px!important;
+  min-width:210px!important;
+  height:44px!important;
+  min-height:44px!important;
+  margin:0!important;
+  line-height:44px!important;
+}
+
+/* Mobile: two equal columns, still no label */
+@media(max-width:760px){
+  .linkedPeriod,
+  .filters{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:12px!important;
+    width:100%!important;
+  }
+
+  .linkedPeriod .field,
+  .filters .field{
+    width:100%!important;
+    min-width:0!important;
+  }
+}
+
 </style>
 </head>
 <body><header class="topNav"><div class="topBrand">無限寶藏財務系統</div><nav class="topNavLinks"><button class="topNavBtn active" data-page="dashboardPage" type="button">總覽</button><button class="topNavBtn" data-page="incomePage" type="button">收入</button><button class="topNavBtn" data-page="expensePage" type="button">支出</button><button class="topNavBtn" data-page="confirmPage" type="button">財務確認</button><button class="topNavBtn" data-page="archivePage" type="button">廠商／個人</button><button class="topNavBtn" data-page="withdrawPage" type="button">提領</button></nav></header>
@@ -3177,6 +3740,7 @@ input[type="checkbox"]:focus-visible{
 <section class="pageView active" id="dashboardPage"><div class="dashboardHero">
 <div>
 <h1>整體總覽</h1>
+<p>掌握收入、支出、待辦與資金狀況。</p>
 </div>
 </div><div class="filters">
 <select class="field" id="yearFilter"><option>2026</option><option>2025</option><option>2024</option></select>
@@ -3269,8 +3833,8 @@ input[type="checkbox"]:focus-visible{
 <button id="exportBtn"></button>
 <div id="userBox"></div>
 </div>
-<div class="systemStatusWrap"><div class="firebaseStatus" id="firebaseStatus">V15.7.7 已載入<small>準備啟動 Firebase</small></div></div>
-<footer>無限寶藏財務系統｜V15.7.7</footer>
+<div class="systemStatusWrap"><div class="firebaseStatus" id="firebaseStatus">V15.7.13 已載入<small>準備啟動 Firebase</small></div></div>
+<footer>無限寶藏財務系統｜V15.7.13</footer>
 </main>
 </div>
 <div class="modal" id="archiveModal"><div class="dialog" style="width:min(760px,96vw)">
