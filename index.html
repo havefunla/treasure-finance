@@ -3730,7 +3730,150 @@ body{
   }
 }
 
+
+/* =========================================================
+   V15.7.14 WEB FONT CONSISTENCY
+   Noto Serif TC headings + Noto Sans TC UI/body
+   ========================================================= */
+:root{
+  --font-serif:"Noto Serif TC","Songti TC","STSongti-TC",serif;
+  --font-sans:"Noto Sans TC",-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei",sans-serif;
+}
+
+/* UI / body */
+html,body,
+button,input,select,textarea,
+.topNavBtn,.subTab,.btn,
+.desktopTable,.mobileCard,.kpi,.badge,
+.linkedPeriod,.filters{
+  font-family:var(--font-sans)!important;
+}
+
+/* Brand and editorial page titles */
+.topBrand,
+.dashboardHero h1,
+.pageHeader h1,
+#withdrawPage .pageHeader h1{
+  font-family:var(--font-serif)!important;
+  font-weight:600!important;
+}
+
+/* Keep financial numbers crisp */
+.num,.money,
+input[type="number"]{
+  font-variant-numeric:tabular-nums!important;
+}
+
+/* Avoid synthetic bold differences on mobile */
+body{
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+
+/* V15.7.15 CHECK STATE + MOBILE FONT FIX */
+.checkBtn{
+  width:30px!important;
+  height:30px!important;
+  min-width:30px!important;
+  min-height:30px!important;
+  padding:0!important;
+  border-radius:50%!important;
+  border:1.5px solid #B8B0A7!important;
+  background:#FFFDF9!important;
+  color:#9D958D!important;
+  box-shadow:none!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+.checkBtn .checkMark{
+  width:11px!important;
+  height:6px!important;
+  border-left:2px solid #9D958D!important;
+  border-bottom:2px solid #9D958D!important;
+  transform:translateY(-1px) rotate(-45deg)!important;
+}
+.checkBtn.done{
+  background:var(--ae-olive, #7F8D6A)!important;
+  border-color:var(--ae-olive, #7F8D6A)!important;
+  color:#fff!important;
+}
+.checkBtn.done .checkMark{
+  border-left-color:#fff!important;
+  border-bottom-color:#fff!important;
+}
+.checkBtn:not(.done):hover{
+  background:#F2F5EE!important;
+  border-color:#A7B39A!important;
+}
+.checkBtn:not(.done):hover .checkMark{
+  border-left-color:#7F8D6A!important;
+  border-bottom-color:#7F8D6A!important;
+}
+.checkBtn.done:hover{
+  background:#6E7D5A!important;
+  border-color:#6E7D5A!important;
+}
+
+.topBrand,
+.dashboardHero h1,
+.pageHeader h1,
+#withdrawPage .pageHeader h1{
+  font-family:"Noto Serif TC","Songti TC","STSongti-TC",serif!important;
+  font-weight:600!important;
+}
+
+body,
+button,
+input,
+select,
+textarea,
+.topNavBtn,
+.subTab,
+.btn,
+.desktopTable,
+.mobileCard,
+.kpi,
+.badge,
+.linkedPeriod,
+.filters,
+.formgrid,
+.accountcard{
+  font-family:"Noto Sans TC",-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei",sans-serif!important;
+}
+
+@media(max-width:760px){
+  .topBrand,
+  .dashboardHero h1,
+  .pageHeader h1,
+  #withdrawPage .pageHeader h1{
+    font-family:"Noto Serif TC","Songti TC","STSongti-TC",serif!important;
+    font-weight:600!important;
+  }
+  body,
+  button,
+  input,
+  select,
+  textarea,
+  .topNavBtn,
+  .subTab,
+  .btn,
+  .mobileCard,
+  .kpi,
+  .badge,
+  .linkedPeriod,
+  .filters,
+  .formgrid,
+  .accountcard{
+    font-family:"Noto Sans TC",-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei",sans-serif!important;
+  }
+}
+
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet">
 </head>
 <body><header class="topNav"><div class="topBrand">無限寶藏財務系統</div><nav class="topNavLinks"><button class="topNavBtn active" data-page="dashboardPage" type="button">總覽</button><button class="topNavBtn" data-page="incomePage" type="button">收入</button><button class="topNavBtn" data-page="expensePage" type="button">支出</button><button class="topNavBtn" data-page="confirmPage" type="button">財務確認</button><button class="topNavBtn" data-page="archivePage" type="button">廠商／個人</button><button class="topNavBtn" data-page="withdrawPage" type="button">提領</button></nav></header>
 
@@ -3833,8 +3976,8 @@ body{
 <button id="exportBtn"></button>
 <div id="userBox"></div>
 </div>
-<div class="systemStatusWrap"><div class="firebaseStatus" id="firebaseStatus">V15.7.13 已載入<small>準備啟動 Firebase</small></div></div>
-<footer>無限寶藏財務系統｜V15.7.13</footer>
+<div class="systemStatusWrap"><div class="firebaseStatus" id="firebaseStatus">V15.7.15 已載入<small>準備啟動 Firebase</small></div></div>
+<footer>無限寶藏財務系統｜V15.7.15</footer>
 </main>
 </div>
 <div class="modal" id="archiveModal"><div class="dialog" style="width:min(760px,96vw)">
